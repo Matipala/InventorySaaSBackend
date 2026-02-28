@@ -1,0 +1,95 @@
+# ============================================================
+# .gitignore para ASP.NET Core Web API (.NET 9.0)
+# ============================================================
+
+# ----------------------------------------------------------
+# Carpetas de compilación (INDISPENSABLE)
+# ----------------------------------------------------------
+# Añadido: ignorar carpetas de compilación
+bin/
+obj/
+
+# ----------------------------------------------------------
+# IDEs y editores
+# ----------------------------------------------------------
+.vs/
+.vscode/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+*.userprefs
+.idea/
+*.swp
+
+# ----------------------------------------------------------
+# Archivos de configuración con datos sensibles
+# ----------------------------------------------------------
+# El archivo de desarrollo puede contener cadenas de conexión reales
+appsettings.Development.json
+appsettings.*.json
+!appsettings.json
+appsettings.json
+
+# Secretos de usuario de .NET (dotnet user-secrets)
+**/secrets.json
+
+# Variables de entorno locales
+.env
+.env.local
+.env.*.local
+
+# ----------------------------------------------------------
+# Publicación y despliegue
+# ----------------------------------------------------------
+publish/
+/nupkg/
+**/Properties/PublishProfiles/
+
+# ----------------------------------------------------------
+# NuGet
+# ----------------------------------------------------------
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+nuget.config
+
+# ----------------------------------------------------------
+# Resultados de pruebas
+# ----------------------------------------------------------
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+*.trx
+
+# ----------------------------------------------------------
+# Logs y archivos temporales
+# ----------------------------------------------------------
+*.log
+*.tmp
+*.temp
+Logs/
+logs/
+
+# ----------------------------------------------------------
+# Entity Framework Core (migraciones generadas automáticamente)
+# ----------------------------------------------------------
+# Descomenta si no quieres versionar las migraciones
+# Migrations/
+
+# ----------------------------------------------------------
+# Docker (si se agrega en el futuro)
+# ----------------------------------------------------------
+# .dockerignore ya lo cubre, pero por si acaso:
+docker-compose.override.yml
+
+# ----------------------------------------------------------
+# macOS
+# ----------------------------------------------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
