@@ -5,7 +5,7 @@ Este proyecto es el backend de InventorySaaS, una solución SaaS para la gestió
 ### Tecnologías principales
 - .NET 9
 - Entity Framework Core
-- SQL Server
+- PostgreSQL
 - Arquitectura en capas (Domain, Business, Infraestructure, Presentation)
 
 ### Estructura del proyecto
@@ -36,5 +36,3 @@ Este proyecto es el backend de InventorySaaS, una solución SaaS para la gestió
 	dotnet ef database update
 	```
 
-### Contacto
-Para dudas o sugerencias, contacta al equipo de desarrollo.
