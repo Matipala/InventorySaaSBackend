@@ -25,6 +25,11 @@ public class MovimientosController : BaseController
     [HttpPost]
     public async Task<IActionResult> CrearMovimiento([FromBody] CrearMovimientoRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new ValidationProblemDetails(ModelState));
+        }
+
         int empresaId = GetEmpresaId();
         var resultado = await _inventarioService.CrearMovimiento(
             request.IdProducto, request.IdAlmacen, request.Cantidad,

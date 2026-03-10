@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using InventorySaaSBackend.Data;
 using InventorySaaSBackend.Services;
 
@@ -15,6 +16,18 @@ builder.Services.AddScoped<IEmpresaService, EmpresaService>();
 builder.Services.AddScoped<IExportService, ExportService>();
 
 builder.Services.AddControllers();
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var problems = new ValidationProblemDetails(context.ModelState)
+        {
+            Title = "Validation Failed",
+            Status = 400
+        };
+        return new BadRequestObjectResult(problems);
+    };
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
