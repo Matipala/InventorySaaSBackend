@@ -1,0 +1,6 @@
+@inventorysaasbackend_HostAddress = http://localhost:5140
+
+GET {{inventorysaasbackend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
