@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using InventorySaaSBackend.Models;
+using InventorySaaSBackend.Modules.Inventario.Domain.Entities;
+using InventorySaaSBackend.Modules.Ventas.Domain.Entities;
 
 namespace InventorySaaSBackend.Data;
 
@@ -13,6 +15,11 @@ public class ApplicationDbContext : DbContext
     public DbSet<Almacenes> Almacenes { get; set; }
     public DbSet<Stock> Stock { get; set; }
     public DbSet<Movimientos> Movimientos { get; set; }
+    public DbSet<UnidadMedida> Unidades { get; set; }
+    public DbSet<CuentaTicket> CuentasTickets { get; set; }
+    public DbSet<CuentaTicketItem> CuentasTicketItems { get; set; }
+    public DbSet<Pago> Pagos { get; set; }
+    public DbSet<Cliente> Clientes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -39,6 +46,22 @@ public class ApplicationDbContext : DbContext
             entity.HasIndex(e => new { e.IdEmpresa, e.Nombre }).IsUnique();
         });
 
+        // ===== UNIDADES =====
+        modelBuilder.Entity<UnidadMedida>(entity =>
+        {
+            entity.HasKey(e => e.IdUnidad);
+            entity.Property(e => e.Nombre).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Abreviatura).IsRequired().HasMaxLength(20);
+            entity.Property(e => e.Activo).HasDefaultValue(true);
+
+            entity.HasOne<Empresas>()
+                .WithMany()
+                .HasForeignKey(e => e.IdEmpresa)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => new { e.IdEmpresa, e.Nombre }).IsUnique();
+        });
+
         // ===== PRODUCTOS =====
         modelBuilder.Entity<Productos>(entity =>
         {
@@ -46,6 +69,8 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Nombre).IsRequired().HasMaxLength(200);
             entity.Property(e => e.Sku).IsRequired().HasMaxLength(50);
             entity.Property(e => e.Activo).HasDefaultValue(true);
+            entity.Property(e => e.PrecioVenta).HasColumnType("numeric(18,2)").HasDefaultValue(0m);
+            entity.Property(e => e.Agotado86).HasDefaultValue(false);
 
             entity.HasOne<Empresas>()
                 .WithMany()
@@ -55,9 +80,14 @@ public class ApplicationDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(e => e.IdCategoria)
                 .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne<UnidadMedida>()
+                .WithMany()
+                .HasForeignKey(e => e.IdUnidad)
+                .OnDelete(DeleteBehavior.Restrict);
             entity.HasIndex(e => new { e.IdEmpresa, e.Sku }).IsUnique();
 
             entity.HasIndex(e => e.IdCategoria);
+            entity.HasIndex(e => e.IdUnidad);
             entity.HasIndex(e => e.Activo);
         });
 
@@ -130,6 +160,96 @@ public class ApplicationDbContext : DbContext
             entity.HasIndex(e => e.IdAlmacen);
             entity.HasIndex(e => e.Fecha);
             entity.HasIndex(e => e.Tipo);
+        });
+
+        // ===== CLIENTES (VENTAS) =====
+        modelBuilder.Entity<Cliente>(entity =>
+        {
+            entity.HasKey(e => e.IdCliente);
+            entity.Property(e => e.Nombre).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Telefono).IsRequired().HasMaxLength(30);
+
+            entity.HasOne<Empresas>()
+                .WithMany()
+                .HasForeignKey(e => e.IdEmpresa)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.IdEmpresa);
+            entity.HasIndex(e => new { e.IdEmpresa, e.Telefono });
+        });
+
+        // ===== CUENTAS / TICKETS =====
+        modelBuilder.Entity<CuentaTicket>(entity =>
+        {
+            entity.HasKey(e => e.IdCuentaTicket);
+            entity.Property(e => e.Estado).IsRequired().HasMaxLength(30);
+            entity.Property(e => e.Mesero).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Subtotal).HasColumnType("numeric(18,2)");
+            entity.Property(e => e.Impuesto).HasColumnType("numeric(18,2)");
+            entity.Property(e => e.Total).HasColumnType("numeric(18,2)");
+            entity.Property(e => e.FechaCreacion).HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entity.HasOne<Empresas>()
+                .WithMany()
+                .HasForeignKey(e => e.IdEmpresa)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne<Almacenes>()
+                .WithMany()
+                .HasForeignKey(e => e.IdAlmacen)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne<Cliente>()
+                .WithMany()
+                .HasForeignKey(e => e.IdCliente)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => new { e.IdEmpresa, e.Numero }).IsUnique();
+            entity.HasIndex(e => new { e.IdEmpresa, e.Estado });
+            entity.HasIndex(e => e.FechaCreacion);
+        });
+
+        modelBuilder.Entity<CuentaTicketItem>(entity =>
+        {
+            entity.HasKey(e => e.IdCuentaTicketItem);
+            entity.Property(e => e.PrecioUnitario).HasColumnType("numeric(18,2)");
+            entity.Property(e => e.Subtotal).HasColumnType("numeric(18,2)");
+
+            entity.HasOne<CuentaTicket>()
+                .WithMany()
+                .HasForeignKey(e => e.IdCuentaTicket)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne<Productos>()
+                .WithMany()
+                .HasForeignKey(e => e.IdProducto)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.IdCuentaTicket);
+            entity.HasIndex(e => e.IdProducto);
+            entity.HasIndex(e => e.ComandaEnviada);
+        });
+
+        modelBuilder.Entity<Pago>(entity =>
+        {
+            entity.HasKey(e => e.IdPago);
+            entity.Property(e => e.MetodoPago).IsRequired().HasMaxLength(20);
+            entity.Property(e => e.Monto).HasColumnType("numeric(18,2)");
+            entity.Property(e => e.FechaPago).HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entity.HasOne<Empresas>()
+                .WithMany()
+                .HasForeignKey(e => e.IdEmpresa)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne<CuentaTicket>()
+                .WithMany()
+                .HasForeignKey(e => e.IdCuentaTicket)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(e => e.IdEmpresa);
+            entity.HasIndex(e => e.IdCuentaTicket);
+            entity.HasIndex(e => e.FechaPago);
         });
     }
 }

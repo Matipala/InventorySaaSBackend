@@ -1,6 +1,84 @@
 @inventorysaasbackend_HostAddress = http://localhost:5140
+@empresaId = 1
 
 GET {{inventorysaasbackend_HostAddress}}/weatherforecast/
 Accept: application/json
+
+###
+
+POST {{inventorysaasbackend_HostAddress}}/api/ventas/cuentas
+Content-Type: application/json
+x-empresa-id: {{empresaId}}
+
+{
+	"idAlmacen": 1,
+	"mesero": "Carlos",
+	"idCliente": null
+}
+
+###
+
+POST {{inventorysaasbackend_HostAddress}}/api/ventas/cuentas/1/items
+Content-Type: application/json
+x-empresa-id: {{empresaId}}
+
+{
+	"idProducto": 1,
+	"cantidad": 2,
+	"precioUnitario": null,
+	"nota": "Sin picante"
+}
+
+###
+
+POST {{inventorysaasbackend_HostAddress}}/api/ventas/cuentas/1/pagar
+Content-Type: application/json
+x-empresa-id: {{empresaId}}
+
+{
+	"metodoPago": "EFECTIVO"
+}
+
+###
+
+GET {{inventorysaasbackend_HostAddress}}/api/ventas/cuentas/1
+x-empresa-id: {{empresaId}}
+
+###
+
+POST {{inventorysaasbackend_HostAddress}}/api/unidades
+Content-Type: application/json
+x-empresa-id: {{empresaId}}
+
+{
+	"nombre": "Unidad",
+	"abreviatura": "und",
+	"activo": true
+}
+
+###
+
+GET {{inventorysaasbackend_HostAddress}}/api/productos?q=arroz&idCategoria=1&activo=true
+x-empresa-id: {{empresaId}}
+
+###
+
+PATCH {{inventorysaasbackend_HostAddress}}/api/productos/1/agotado
+Content-Type: application/json
+x-empresa-id: {{empresaId}}
+
+true
+
+###
+
+POST {{inventorysaasbackend_HostAddress}}/api/stock/inicial
+Content-Type: application/json
+x-empresa-id: {{empresaId}}
+
+{
+	"idProducto": 1,
+	"idAlmacen": 1,
+	"cantidad": 25
+}
 
 ###
