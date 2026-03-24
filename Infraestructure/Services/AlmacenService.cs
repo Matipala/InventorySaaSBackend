@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using InventorySaaSBackend.Data;
+using InventorySaaSBackend.Business.Interface;
 using InventorySaaSBackend.Models;
 
-namespace InventorySaaSBackend.Services;
+namespace InventorySaaSBackend.Infraestructure.Services;
 
 public class AlmacenService : IAlmacenService
 {

@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using InventorySaaSBackend.Controllers;
 using InventorySaaSBackend.Data;
+using InventorySaaSBackend.Business.DTOs;
+using InventorySaaSBackend.Business.Interface;
 using InventorySaaSBackend.Models;
 using InventorySaaSBackend.Services;
-using InventorySaaSBackend.DTOs;
 
-namespace InventorySaaSBackend.Controllers;
+namespace InventorySaaSBackend.Presentation.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -153,6 +155,28 @@ public class StockController : BaseController
             return BadRequest(resultado.mensaje);
 
         return Ok(new { mensaje = resultado.mensaje });
+    }
+
+    [HttpPost("inicial")]
+    public async Task<IActionResult> RegistrarStockInicial([FromBody] StockInicialRequest request)
+    {
+        int empresaId = GetEmpresaId();
+
+        if (request.Cantidad <= 0)
+            return BadRequest("La cantidad inicial debe ser mayor a cero");
+
+        var resultado = await _inventarioService.CrearMovimiento(
+            request.IdProducto,
+            request.IdAlmacen,
+            request.Cantidad,
+            "ENTRADA",
+            empresaId
+        );
+
+        if (!resultado.exito)
+            return BadRequest(resultado.mensaje);
+
+        return Ok(new { mensaje = "Stock inicial registrado exitosamente" });
     }
 
     [HttpGet("alertas/bajo")]

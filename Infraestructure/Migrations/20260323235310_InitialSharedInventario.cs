@@ -4,16 +4,23 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace InventorySaaS_Backend.Migrations
+namespace inventorysaasbackend.Infraestructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialSharedInventario : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "inventario");
+
+            migrationBuilder.EnsureSchema(
+                name: "shared");
+
             migrationBuilder.CreateTable(
                 name: "Empresas",
+                schema: "shared",
                 columns: table => new
                 {
                     id_empresa = table.Column<int>(type: "integer", nullable: false)
@@ -28,6 +35,7 @@ namespace InventorySaaS_Backend.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Almacenes",
+                schema: "inventario",
                 columns: table => new
                 {
                     id_almacen = table.Column<int>(type: "integer", nullable: false)
@@ -41,6 +49,7 @@ namespace InventorySaaS_Backend.Migrations
                     table.ForeignKey(
                         name: "FK_Almacenes_Empresas_id_empresa",
                         column: x => x.id_empresa,
+                        principalSchema: "shared",
                         principalTable: "Empresas",
                         principalColumn: "id_empresa",
                         onDelete: ReferentialAction.Restrict);
@@ -48,6 +57,7 @@ namespace InventorySaaS_Backend.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Categorias",
+                schema: "inventario",
                 columns: table => new
                 {
                     id_categoria = table.Column<int>(type: "integer", nullable: false)
@@ -61,29 +71,31 @@ namespace InventorySaaS_Backend.Migrations
                     table.ForeignKey(
                         name: "FK_Categorias_Empresas_id_empresa",
                         column: x => x.id_empresa,
+                        principalSchema: "shared",
                         principalTable: "Empresas",
                         principalColumn: "id_empresa",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Documentos",
+                name: "Unidades",
+                schema: "inventario",
                 columns: table => new
                 {
-                    id_documento = table.Column<int>(type: "integer", nullable: false)
+                    id_unidad = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     id_empresa = table.Column<int>(type: "integer", nullable: false),
-                    tipo = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    estado = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false, defaultValue: "BORRADOR"),
-                    fecha = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
+                    nombre = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    abreviatura = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    activo = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Documentos", x => x.id_documento);
-                    table.CheckConstraint("CK_Documentos_Estado", "estado IN ('BORRADOR', 'CONFIRMADO')");
+                    table.PrimaryKey("PK_Unidades", x => x.id_unidad);
                     table.ForeignKey(
-                        name: "FK_Documentos_Empresas_id_empresa",
+                        name: "FK_Unidades_Empresas_id_empresa",
                         column: x => x.id_empresa,
+                        principalSchema: "shared",
                         principalTable: "Empresas",
                         principalColumn: "id_empresa",
                         onDelete: ReferentialAction.Restrict);
@@ -91,6 +103,7 @@ namespace InventorySaaS_Backend.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Productos",
+                schema: "inventario",
                 columns: table => new
                 {
                     id_producto = table.Column<int>(type: "integer", nullable: false)
@@ -99,6 +112,9 @@ namespace InventorySaaS_Backend.Migrations
                     sku = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     nombre = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     id_categoria = table.Column<int>(type: "integer", nullable: false),
+                    id_unidad = table.Column<int>(type: "integer", nullable: true),
+                    precio_venta = table.Column<decimal>(type: "numeric(18,2)", nullable: false, defaultValue: 0m),
+                    agotado_86 = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     activo = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
@@ -107,60 +123,34 @@ namespace InventorySaaS_Backend.Migrations
                     table.ForeignKey(
                         name: "FK_Productos_Categorias_id_categoria",
                         column: x => x.id_categoria,
+                        principalSchema: "inventario",
                         principalTable: "Categorias",
                         principalColumn: "id_categoria",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Productos_Empresas_id_empresa",
                         column: x => x.id_empresa,
+                        principalSchema: "shared",
                         principalTable: "Empresas",
                         principalColumn: "id_empresa",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "documento_detalle",
-                columns: table => new
-                {
-                    id_detalle = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    id_documento = table.Column<int>(type: "integer", nullable: false),
-                    id_producto = table.Column<int>(type: "integer", nullable: false),
-                    id_almacen = table.Column<int>(type: "integer", nullable: false),
-                    cantidad = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_documento_detalle", x => x.id_detalle);
-                    table.CheckConstraint("CK_DocumentoDetalle_Cantidad", "cantidad > 0");
                     table.ForeignKey(
-                        name: "FK_documento_detalle_Almacenes_id_almacen",
-                        column: x => x.id_almacen,
-                        principalTable: "Almacenes",
-                        principalColumn: "id_almacen",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_documento_detalle_Documentos_id_documento",
-                        column: x => x.id_documento,
-                        principalTable: "Documentos",
-                        principalColumn: "id_documento",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_documento_detalle_Productos_id_producto",
-                        column: x => x.id_producto,
-                        principalTable: "Productos",
-                        principalColumn: "id_producto",
+                        name: "FK_Productos_Unidades_id_unidad",
+                        column: x => x.id_unidad,
+                        principalSchema: "inventario",
+                        principalTable: "Unidades",
+                        principalColumn: "id_unidad",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Movimientos",
+                schema: "inventario",
                 columns: table => new
                 {
                     id_movimiento = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     id_empresa = table.Column<int>(type: "integer", nullable: false),
-                    id_documento = table.Column<int>(type: "integer", nullable: false),
                     id_producto = table.Column<int>(type: "integer", nullable: false),
                     id_almacen = table.Column<int>(type: "integer", nullable: false),
                     tipo = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
@@ -173,24 +163,21 @@ namespace InventorySaaS_Backend.Migrations
                     table.ForeignKey(
                         name: "FK_Movimientos_Almacenes_id_almacen",
                         column: x => x.id_almacen,
+                        principalSchema: "inventario",
                         principalTable: "Almacenes",
                         principalColumn: "id_almacen",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Movimientos_Documentos_id_documento",
-                        column: x => x.id_documento,
-                        principalTable: "Documentos",
-                        principalColumn: "id_documento",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
                         name: "FK_Movimientos_Empresas_id_empresa",
                         column: x => x.id_empresa,
+                        principalSchema: "shared",
                         principalTable: "Empresas",
                         principalColumn: "id_empresa",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Movimientos_Productos_id_producto",
                         column: x => x.id_producto,
+                        principalSchema: "inventario",
                         principalTable: "Productos",
                         principalColumn: "id_producto",
                         onDelete: ReferentialAction.Restrict);
@@ -198,6 +185,7 @@ namespace InventorySaaS_Backend.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Stock",
+                schema: "inventario",
                 columns: table => new
                 {
                     id_stock = table.Column<int>(type: "integer", nullable: false)
@@ -214,18 +202,21 @@ namespace InventorySaaS_Backend.Migrations
                     table.ForeignKey(
                         name: "FK_Stock_Almacenes_id_almacen",
                         column: x => x.id_almacen,
+                        principalSchema: "inventario",
                         principalTable: "Almacenes",
                         principalColumn: "id_almacen",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Stock_Empresas_id_empresa",
                         column: x => x.id_empresa,
+                        principalSchema: "shared",
                         principalTable: "Empresas",
                         principalColumn: "id_empresa",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Stock_Productos_id_producto",
                         column: x => x.id_producto,
+                        principalSchema: "inventario",
                         principalTable: "Productos",
                         principalColumn: "id_producto",
                         onDelete: ReferentialAction.Restrict);
@@ -233,120 +224,108 @@ namespace InventorySaaS_Backend.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Almacenes_id_empresa",
+                schema: "inventario",
                 table: "Almacenes",
                 column: "id_empresa");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Categorias_id_empresa_nombre",
+                schema: "inventario",
                 table: "Categorias",
                 columns: new[] { "id_empresa", "nombre" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_documento_detalle_id_almacen",
-                table: "documento_detalle",
-                column: "id_almacen");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_documento_detalle_id_documento",
-                table: "documento_detalle",
-                column: "id_documento");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_documento_detalle_id_producto",
-                table: "documento_detalle",
-                column: "id_producto");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Documentos_estado",
-                table: "Documentos",
-                column: "estado");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Documentos_fecha",
-                table: "Documentos",
-                column: "fecha");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Documentos_id_empresa",
-                table: "Documentos",
-                column: "id_empresa");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Documentos_tipo",
-                table: "Documentos",
-                column: "tipo");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Empresas_nombre",
+                schema: "shared",
                 table: "Empresas",
                 column: "nombre");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Movimientos_fecha",
+                schema: "inventario",
                 table: "Movimientos",
                 column: "fecha");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Movimientos_id_almacen",
+                schema: "inventario",
                 table: "Movimientos",
                 column: "id_almacen");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Movimientos_id_documento",
-                table: "Movimientos",
-                column: "id_documento");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Movimientos_id_empresa",
+                schema: "inventario",
                 table: "Movimientos",
                 column: "id_empresa");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Movimientos_id_producto",
+                schema: "inventario",
                 table: "Movimientos",
                 column: "id_producto");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Movimientos_tipo",
+                schema: "inventario",
                 table: "Movimientos",
                 column: "tipo");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Productos_activo",
+                schema: "inventario",
                 table: "Productos",
                 column: "activo");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Productos_id_categoria",
+                schema: "inventario",
                 table: "Productos",
                 column: "id_categoria");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Productos_id_empresa_sku",
+                schema: "inventario",
                 table: "Productos",
                 columns: new[] { "id_empresa", "sku" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Productos_id_unidad",
+                schema: "inventario",
+                table: "Productos",
+                column: "id_unidad");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Stock_id_almacen",
+                schema: "inventario",
                 table: "Stock",
                 column: "id_almacen");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Stock_id_empresa",
+                schema: "inventario",
                 table: "Stock",
                 column: "id_empresa");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Stock_id_producto",
+                schema: "inventario",
                 table: "Stock",
                 column: "id_producto");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Stock_id_producto_id_almacen",
+                schema: "inventario",
                 table: "Stock",
                 columns: new[] { "id_producto", "id_almacen" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Unidades_id_empresa_nombre",
+                schema: "inventario",
+                table: "Unidades",
+                columns: new[] { "id_empresa", "nombre" },
                 unique: true);
         }
 
@@ -354,28 +333,32 @@ namespace InventorySaaS_Backend.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "documento_detalle");
+                name: "Movimientos",
+                schema: "inventario");
 
             migrationBuilder.DropTable(
-                name: "Movimientos");
+                name: "Stock",
+                schema: "inventario");
 
             migrationBuilder.DropTable(
-                name: "Stock");
+                name: "Almacenes",
+                schema: "inventario");
 
             migrationBuilder.DropTable(
-                name: "Documentos");
+                name: "Productos",
+                schema: "inventario");
 
             migrationBuilder.DropTable(
-                name: "Almacenes");
+                name: "Categorias",
+                schema: "inventario");
 
             migrationBuilder.DropTable(
-                name: "Productos");
+                name: "Unidades",
+                schema: "inventario");
 
             migrationBuilder.DropTable(
-                name: "Categorias");
-
-            migrationBuilder.DropTable(
-                name: "Empresas");
+                name: "Empresas",
+                schema: "shared");
         }
     }
 }

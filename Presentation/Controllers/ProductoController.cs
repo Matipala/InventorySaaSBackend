@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using InventorySaaSBackend.Controllers;
+using InventorySaaSBackend.Business.Interface;
 using InventorySaaSBackend.Models;
 using InventorySaaSBackend.Services;
 
-namespace InventorySaaSBackend.Controllers;
+namespace InventorySaaSBackend.Presentation.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -18,10 +20,10 @@ public class ProductosController : BaseController
     }
 
     [HttpGet()]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] string? q, [FromQuery] int? idCategoria, [FromQuery] int? idUnidad, [FromQuery] bool? activo)
     {
         int empresaId = GetEmpresaId();
-        var productos = await _productoService.ObtenerTodos(empresaId);
+        var productos = await _productoService.BuscarFiltrados(empresaId, q, idCategoria, idUnidad, activo);
         return Ok(productos);
     }
 
@@ -76,6 +78,18 @@ public class ProductosController : BaseController
             return NotFound("Producto no encontrado");
 
         return Ok(new { mensaje = $"Producto {(activo ? "activado" : "desactivado")} exitosamente", producto });
+    }
+
+    [HttpPatch("{id}/agotado")]
+    public async Task<IActionResult> CambiarAgotado(int id, [FromBody] bool agotado)
+    {
+        int empresaId = GetEmpresaId();
+        var producto = await _productoService.CambiarAgotado(id, agotado, empresaId);
+
+        if (producto == null)
+            return NotFound("Producto no encontrado");
+
+        return Ok(new { mensaje = $"Producto marcado como {(agotado ? "agotado (86)" : "disponible")}", producto });
     }
 
     [HttpGet("exportar/excel")]

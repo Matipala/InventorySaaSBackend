@@ -1,6 +1,6 @@
 using InventorySaaSBackend.Models;
 
-namespace InventorySaaSBackend.Services;
+namespace InventorySaaSBackend.Business.Interface;
 
 public interface ICategoriaService
 {

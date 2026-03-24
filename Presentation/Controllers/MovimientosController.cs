@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using InventorySaaSBackend.Controllers;
 using InventorySaaSBackend.Data;
+using InventorySaaSBackend.Business.DTOs;
+using InventorySaaSBackend.Business.Interface;
 using InventorySaaSBackend.Models;
 using InventorySaaSBackend.Services;
-using InventorySaaSBackend.DTOs;
 
-namespace InventorySaaSBackend.Controllers;
+namespace InventorySaaSBackend.Presentation.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

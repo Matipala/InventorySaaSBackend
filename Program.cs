@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using InventorySaaSBackend.Data;
+
+using InventorySaaSBackend.Business.Interface;
+
+using InventorySaaSBackend.Infraestructure.Services;
 using InventorySaaSBackend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +15,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IInventarioService, InventarioService>();
 builder.Services.AddScoped<IAlmacenService, AlmacenService>();
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
+builder.Services.AddScoped<IUnidadService, UnidadService>();
 builder.Services.AddScoped<IProductoService, ProductoService>();
 builder.Services.AddScoped<IEmpresaService, EmpresaService>();
 builder.Services.AddScoped<IExportService, ExportService>();

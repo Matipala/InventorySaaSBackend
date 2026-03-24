@@ -1,4 +1,4 @@
-namespace InventorySaaSBackend.DTOs;
+namespace InventorySaaSBackend.Business.DTOs;
 
 public class CrearMovimientoRequest
 {
