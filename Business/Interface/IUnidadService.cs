@@ -1,6 +1,6 @@
-using InventorySaaSBackend.Modules.Inventario.Domain.Entities;
+using InventorySaaSBackend.Domain.Entity;
 
-namespace InventorySaaSBackend.Modules.Inventario.Application.Interfaces;
+namespace InventorySaaSBackend.Business.Interface;
 
 public interface IUnidadService
 {

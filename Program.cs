@@ -1,13 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using InventorySaaSBackend.Data;
-using InventorySaaSBackend.Modules.Inventario.Application;
-using InventorySaaSBackend.Modules.Inventario.Application.Interfaces;
-using InventorySaaSBackend.Modules.Inventario.Infrastructure;
-using InventorySaaSBackend.Modules.Inventario.Infrastructure.Services;
-using InventorySaaSBackend.Modules.Shared.Configuration;
-using InventorySaaSBackend.Modules.Ventas.Application;
-using InventorySaaSBackend.Modules.Ventas.Infrastructure;
+
+using InventorySaaSBackend.Business.Interface;
+
+using InventorySaaSBackend.Infraestructure.Services;
 using InventorySaaSBackend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,17 +12,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.Configure<SalesOptions>(builder.Configuration.GetSection(SalesOptions.SectionName));
-
 builder.Services.AddScoped<IInventarioService, InventarioService>();
-builder.Services.AddScoped<IStockGateway, InventarioStockGateway>();
 builder.Services.AddScoped<IAlmacenService, AlmacenService>();
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 builder.Services.AddScoped<IUnidadService, UnidadService>();
 builder.Services.AddScoped<IProductoService, ProductoService>();
 builder.Services.AddScoped<IEmpresaService, EmpresaService>();
 builder.Services.AddScoped<IExportService, ExportService>();
-builder.Services.AddScoped<ICuentaTicketService, CuentaTicketService>();
 
 builder.Services.AddControllers();
 builder.Services.Configure<ApiBehaviorOptions>(options =>

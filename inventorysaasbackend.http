@@ -6,46 +6,6 @@ Accept: application/json
 
 ###
 
-POST {{inventorysaasbackend_HostAddress}}/api/ventas/cuentas
-Content-Type: application/json
-x-empresa-id: {{empresaId}}
-
-{
-	"idAlmacen": 1,
-	"mesero": "Carlos",
-	"idCliente": null
-}
-
-###
-
-POST {{inventorysaasbackend_HostAddress}}/api/ventas/cuentas/1/items
-Content-Type: application/json
-x-empresa-id: {{empresaId}}
-
-{
-	"idProducto": 1,
-	"cantidad": 2,
-	"precioUnitario": null,
-	"nota": "Sin picante"
-}
-
-###
-
-POST {{inventorysaasbackend_HostAddress}}/api/ventas/cuentas/1/pagar
-Content-Type: application/json
-x-empresa-id: {{empresaId}}
-
-{
-	"metodoPago": "EFECTIVO"
-}
-
-###
-
-GET {{inventorysaasbackend_HostAddress}}/api/ventas/cuentas/1
-x-empresa-id: {{empresaId}}
-
-###
-
 POST {{inventorysaasbackend_HostAddress}}/api/unidades
 Content-Type: application/json
 x-empresa-id: {{empresaId}}
