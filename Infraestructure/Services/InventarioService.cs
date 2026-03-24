@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using InventorySaaSBackend.Data;
-using InventorySaaSBackend.Business.Interface;
+using InventorySaaSBackend.Application.Interface;
 using InventorySaaSBackend.Models;
 
 namespace InventorySaaSBackend.Infraestructure.Services;

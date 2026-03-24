@@ -1,4 +1,4 @@
-namespace InventorySaaSBackend.Business.Interface;
+namespace InventorySaaSBackend.Application.Interface;
 
 public interface IInventarioService
 {

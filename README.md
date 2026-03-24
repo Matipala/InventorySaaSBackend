@@ -6,10 +6,10 @@ Este proyecto es el backend de InventorySaaS, una solución SaaS para la gestió
 - .NET 9
 - Entity Framework Core
 - PostgreSQL
-- Arquitectura en capas (Domain, Business, Infraestructure, Presentation)
+- Arquitectura en capas (Domain, Application, Infraestructure, Presentation)
 
 ### Estructura del proyecto
-- **Business/**: Lógica de negocio y servicios
+- **Application/**: Lógica de negocio y servicios
 - **Domain/**: Entidades, DTOs y contexto de datos
 - **Infraestructure/**: Implementaciones, migraciones y servicios de infraestructura
 - **Presentation/**: Controladores y endpoints de la API

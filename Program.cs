@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using InventorySaaSBackend.Data;
 
-using InventorySaaSBackend.Business.Interface;
+using InventorySaaSBackend.Application.Interface;
 
 using InventorySaaSBackend.Infraestructure.Services;
 using InventorySaaSBackend.Services;
