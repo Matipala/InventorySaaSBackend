@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using InventorySaaSBackend.Controllers;
-using InventorySaaSBackend.Data;
+using InventorySaaSBackend.Infrastructure.Data;
 using InventorySaaSBackend.Application.DTOs;
 using InventorySaaSBackend.Application.Interface;
 using InventorySaaSBackend.Models;
@@ -238,6 +238,37 @@ public class StockController : BaseController
             .ToListAsync();
 
         return Ok(stockAgotado);
+    }
+
+    [HttpPost("validar")]
+    public async Task<IActionResult> Validar([FromBody] ValidarStockRequest request)
+    {
+        int empresaId = GetEmpresaId();
+        bool disponible = await _inventarioService.ValidarStockDisponible(request.ProductoId, request.AlmacenId, (int)request.Cantidad, empresaId);
+        return Ok(disponible);
+    }
+
+    [HttpPost("descontar")]
+    public async Task<IActionResult> Descontar([FromBody] ValidarStockRequest request)
+    {
+        int empresaId = GetEmpresaId();
+        try
+        {
+            await _inventarioService.ActualizarStock(request.ProductoId, request.AlmacenId, (int)-request.Cantidad, empresaId);
+            return Ok(true);
+        }
+        catch
+        {
+            return Ok(false);
+        }
+    }
+
+    [HttpGet("actual")]
+    public async Task<IActionResult> GetActual([FromQuery] int productoId, [FromQuery] int almacenId)
+    {
+        int empresaId = GetEmpresaId();
+        var cantidad = await _inventarioService.ObtenerStockActual(productoId, almacenId, empresaId);
+        return Ok(cantidad);
     }
 
     [HttpGet("exportar/excel")]

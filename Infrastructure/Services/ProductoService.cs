@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using InventorySaaSBackend.Data;
+using InventorySaaSBackend.Infrastructure.Data;
 using InventorySaaSBackend.Application.Interface;
 using InventorySaaSBackend.Models;
 
-namespace InventorySaaSBackend.Infraestructure.Services;
+namespace InventorySaaSBackend.Infrastructure.Services;
 
 public class ProductoService : IProductoService
 {
@@ -140,6 +140,7 @@ public class ProductoService : IProductoService
         producto.PrecioVenta = productoActualizado.PrecioVenta;
         producto.Agotado86 = productoActualizado.Agotado86;
         producto.Activo = productoActualizado.Activo;
+        producto.Estacion = productoActualizado.Estacion;
 
         _context.Productos.Update(producto);
         await _context.SaveChangesAsync();

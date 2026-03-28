@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using InventorySaaSBackend.Data;
+using InventorySaaSBackend.Infrastructure.Data;
 using InventorySaaSBackend.Application.Interface;
 using InventorySaaSBackend.Models;
 
-namespace InventorySaaSBackend.Infraestructure.Services;
+namespace InventorySaaSBackend.Infrastructure.Services;
 
 public class InventarioService : IInventarioService
 {

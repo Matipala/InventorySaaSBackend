@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using InventorySaaSBackend.Data;
+using InventorySaaSBackend.Infrastructure.Data;
 using OfficeOpenXml;
 
 namespace InventorySaaSBackend.Services;

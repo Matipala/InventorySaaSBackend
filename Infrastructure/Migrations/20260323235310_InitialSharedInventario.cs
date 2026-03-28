@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace inventorysaasbackend.Infraestructure.Migrations
+namespace inventorysaasbackend.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class InitialSharedInventario : Migration

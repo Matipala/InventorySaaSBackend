@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
-using InventorySaaSBackend.Data;
+using InventorySaaSBackend.Infrastructure.Data;
 
 using InventorySaaSBackend.Application.Interface;
 
-using InventorySaaSBackend.Infraestructure.Services;
+using InventorySaaSBackend.Infrastructure.Services;
 using InventorySaaSBackend.Services;
 
 var builder = WebApplication.CreateBuilder(args);

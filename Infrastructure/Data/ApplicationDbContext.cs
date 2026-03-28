@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using InventorySaaSBackend.Models;
 using InventorySaaSBackend.Domain.Entity;
 
-namespace InventorySaaSBackend.Data;
+namespace InventorySaaSBackend.Infrastructure.Data;
 
 public class ApplicationDbContext : DbContext
 {
