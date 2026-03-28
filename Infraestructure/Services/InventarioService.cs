@@ -15,7 +15,7 @@ public class InventarioService : IInventarioService
     }
 
     public async Task<(bool exito, string mensaje)> CrearMovimiento(
-        int idProducto, int idAlmacen, int cantidad, string tipo, int idEmpresa, int? idAlmacenDestino = null)
+        int idProducto, int idAlmacen, int cantidad, string tipo, int idEmpresa, int? idAlmacenDestino = null, string? motivo = null)
     {
         using var transaction = await _context.Database.BeginTransactionAsync();
         try
@@ -30,8 +30,8 @@ public class InventarioService : IInventarioService
             if (almacen == null)
                 return (false, "Almacen no encontrado");
 
-            if (cantidad <= 0)
-                return (false, "La cantidad debe ser mayor a cero");
+            if (cantidad < 0)
+                return (false, "La cantidad no puede ser negativa");
 
             var tiposValidos = new[] { "ENTRADA", "SALIDA", "TRANSFERENCIA" };
             if (!tiposValidos.Contains(tipo))
@@ -61,7 +61,8 @@ public class InventarioService : IInventarioService
                     IdAlmacen = idAlmacen,
                     Tipo = "SALIDA",
                     Fecha = DateTime.UtcNow,
-                    Cantidad = cantidad
+                    Cantidad = cantidad,
+                    Motivo = motivo
                 });
                 await ActualizarStock(idProducto, idAlmacen, -cantidad, idEmpresa);
 
@@ -72,7 +73,8 @@ public class InventarioService : IInventarioService
                     IdAlmacen = idAlmacenDestino.Value,
                     Tipo = "ENTRADA",
                     Fecha = DateTime.UtcNow,
-                    Cantidad = cantidad
+                    Cantidad = cantidad,
+                    Motivo = motivo
                 });
                 await ActualizarStock(idProducto, idAlmacenDestino.Value, cantidad, idEmpresa);
             }
@@ -86,7 +88,8 @@ public class InventarioService : IInventarioService
                     IdAlmacen = idAlmacen,
                     Tipo = tipo,
                     Fecha = DateTime.UtcNow,
-                    Cantidad = cantidad
+                    Cantidad = cantidad,
+                    Motivo = motivo
                 });
                 await ActualizarStock(idProducto, idAlmacen, impacto, idEmpresa);
             }
@@ -156,10 +159,14 @@ public class InventarioService : IInventarioService
         try
         {
             var stockActual = await ObtenerStockActual(idProducto, idAlmacen, idEmpresa);
+
+            if (nuevaCantidad < 0)
+                return (false, "La nueva cantidad no puede ser negativa");
+
             int diferencia = nuevaCantidad - stockActual;
 
             if (diferencia == 0)
-                return (false, "No hay diferencia en el stock");
+                return (true, "No hay cambios sugeridos, el stock ya coincide.");
 
             _context.Movimientos.Add(new Movimientos
             {
@@ -168,7 +175,8 @@ public class InventarioService : IInventarioService
                 IdAlmacen = idAlmacen,
                 Tipo = diferencia > 0 ? "AJUSTE_POSITIVO" : "AJUSTE_NEGATIVO",
                 Fecha = DateTime.UtcNow,
-                Cantidad = Math.Abs(diferencia)
+                Cantidad = Math.Abs(diferencia),
+                Motivo = motivo
             });
 
             await ActualizarStock(idProducto, idAlmacen, diferencia, idEmpresa);

@@ -59,8 +59,11 @@ public class ProductoService : IProductoService
         if (string.IsNullOrWhiteSpace(producto.Sku))
             return (false, "El SKU del producto es obligatorio", null);
 
-        if (producto.PrecioVenta < 0)
-            return (false, "El precio de venta no puede ser negativo", null);
+        if (producto.PrecioVenta <= 0)
+            return (false, "El precio de venta debe ser mayor a cero", null);
+
+        if (!producto.IdUnidad.HasValue)
+            return (false, "La unidad es obligatoria", null);
 
         var categoriaExiste = await _context.Categorias
             .AnyAsync(c => c.IdCategoria == producto.IdCategoria && c.IdEmpresa == idEmpresa);
@@ -68,14 +71,11 @@ public class ProductoService : IProductoService
         if (!categoriaExiste)
             return (false, "La categoria seleccionada no existe", null);
 
-        if (producto.IdUnidad.HasValue)
-        {
-            var unidadExiste = await _context.Unidades
-                .AnyAsync(u => u.IdUnidad == producto.IdUnidad.Value && u.IdEmpresa == idEmpresa && u.Activo);
+        var unidadExiste = await _context.Unidades
+            .AnyAsync(u => u.IdUnidad == producto.IdUnidad.Value && u.IdEmpresa == idEmpresa && u.Activo);
 
-            if (!unidadExiste)
-                return (false, "La unidad seleccionada no existe o esta inactiva", null);
-        }
+        if (!unidadExiste)
+            return (false, "La unidad seleccionada no existe o esta inactiva", null);
 
         producto.IdEmpresa = idEmpresa;
         producto.Nombre = producto.Nombre.Trim();
@@ -107,8 +107,11 @@ public class ProductoService : IProductoService
         if (string.IsNullOrWhiteSpace(productoActualizado.Sku))
             return (false, "El SKU del producto es obligatorio", null);
 
-        if (productoActualizado.PrecioVenta < 0)
-            return (false, "El precio de venta no puede ser negativo", null);
+        if (productoActualizado.PrecioVenta <= 0)
+            return (false, "El precio de venta debe ser mayor a cero", null);
+
+        if (!productoActualizado.IdUnidad.HasValue)
+            return (false, "La unidad es obligatoria", null);
 
         var categoriaExiste = await _context.Categorias
             .AnyAsync(c => c.IdCategoria == productoActualizado.IdCategoria && c.IdEmpresa == idEmpresa);
@@ -116,14 +119,11 @@ public class ProductoService : IProductoService
         if (!categoriaExiste)
             return (false, "La categoria seleccionada no existe", null);
 
-        if (productoActualizado.IdUnidad.HasValue)
-        {
-            var unidadExiste = await _context.Unidades
-                .AnyAsync(u => u.IdUnidad == productoActualizado.IdUnidad.Value && u.IdEmpresa == idEmpresa && u.Activo);
+        var unidadExiste = await _context.Unidades
+            .AnyAsync(u => u.IdUnidad == productoActualizado.IdUnidad.Value && u.IdEmpresa == idEmpresa && u.Activo);
 
-            if (!unidadExiste)
-                return (false, "La unidad seleccionada no existe o esta inactiva", null);
-        }
+        if (!unidadExiste)
+            return (false, "La unidad seleccionada no existe o esta inactiva", null);
 
         bool skuEnUso = await _context.Productos
             .AnyAsync(p => p.Sku == productoActualizado.Sku &&

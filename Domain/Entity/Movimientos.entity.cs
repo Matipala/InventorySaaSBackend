@@ -14,4 +14,5 @@ public class Movimientos
     [Column("tipo")] public string Tipo { get; set; } = string.Empty;
     [Column("fecha")] public DateTime Fecha { get; set; } = DateTime.Now;
     [Column("cantidad")] public int Cantidad { get; set; } = 0;
+    [Column("motivo")] public string? Motivo { get; set; }
 }

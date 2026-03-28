@@ -162,15 +162,17 @@ public class StockController : BaseController
     {
         int empresaId = GetEmpresaId();
 
-        if (request.Cantidad <= 0)
-            return BadRequest("La cantidad inicial debe ser mayor a cero");
+        if (request.Cantidad < 0)
+            return (BadRequest("La cantidad inicial no puede ser negativa"));
 
         var resultado = await _inventarioService.CrearMovimiento(
             request.IdProducto,
             request.IdAlmacen,
             request.Cantidad,
             "ENTRADA",
-            empresaId
+            empresaId,
+            null,
+            "Stock Inicial"
         );
 
         if (!resultado.exito)
