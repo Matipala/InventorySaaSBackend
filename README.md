@@ -1,38 +1,61 @@
-## InventorySaaSBackend
+# InventorySaaS - Core API
 
-Este proyecto es el backend de InventorySaaS, una solución SaaS para la gestión de inventarios empresariales.
+Motor transaccional de alta disponibilidad para la gestión centralizada de inventarios, optimizado para entornos multi-empresa y multi-almacén.
 
-### Tecnologías principales
-- .NET 9
-- Entity Framework Core
-- PostgreSQL
-- Arquitectura en capas (Domain, Application, Infrastructure, Presentation)
+##  Descripción breve
+**InventorySaaS - Core API** proporciona la infraestructura lógica necesaria para el control de stock, gestión de almacenes y trazabilidad de productos. Construida bajo los principios de **Clean Architecture**, esta API asegura escalabilidad, facilidad de mantenimiento y un desacoplamiento efectivo entre la lógica de negocio y los detalles de infraestructura.
 
-### Estructura del proyecto
-- **Application/**: Lógica de negocio y servicios
-- **Domain/**: Entidades, DTOs y contexto de datos
-- **Infrastructure/**: Implementaciones, migraciones y servicios de infraestructura
-- **Presentation/**: Controladores y endpoints de la API
+##  Alcance funcional implementado
+Gestión centralizada de recursos físicos y reglas de negocio asociadas a la existencia de productos en múltiples ubicaciones, cumpliendo con estándares industriales de control y auditoría.
 
-### Configuración y ejecución
-1. Clona el repositorio
-2. Configura la cadena de conexión en `appsettings.json`
-3. Aplica las migraciones:
-	 ```bash
-	 dotnet ef database update
-	 ```
-4. Ejecuta el proyecto:
-	 ```bash
-	 dotnet run
-	 ```
+## Lista de funcionalidades desarrolladas
+- **Arquitectura Limpia (Clean Architecture):** Implementación de 4 capas para una separación clara de responsabilidades.
+- **Gestión Multi-Almacén:** Control de existencias segregado por ubicación física.
+- **Catálogo de Productos Avanzado:** Clasificación por categorías, unidades de medida y gestión de stock mínimo/máximo.
+- **Trazabilidad Continua:** Registro histórico detallado de movimientos de entrada, salida y transferencias internas.
+- **Exportación de Reportes:** Generación de archivos Excel dinámicos utilizando **EPPlus** para análisis externo.
+- **Documentación de API:** Documentación interactiva completa con **Swagger/OpenAPI**.
 
-### Scripts útiles
-- Crear migración:
-	```bash
-	dotnet ef migrations add NombreMigracion
-	```
-- Actualizar base de datos:
-	```bash
-	dotnet ef database update
-	```
+## Tecnologías utilizadas
+- **Runtime:** [.NET 9.0](https://dotnet.microsoft.com/)
+- **ORM:** [Entity Framework Core 9.0](https://learn.microsoft.com/ef/core/)
+- **Base de Datos:** [PostgreSQL](https://www.postgresql.org/)
+- **Reportes:** [EPPlus](https://www.epplussoftware.com/)
+- **Documentación:** [Swashbuckle (Swagger)](https://github.com/domaindrivendev/Swashbuckle.AspNetCore)
 
+## Instrucciones de ejecución
+
+### Requisitos previos
+- .NET 9.0 SDK
+- PostgreSQL 15+ instalado y configurado
+
+### Pasos para iniciar el servidor
+1. **Configurar la base de datos:**
+   Modifica la cadena de conexión en `appsettings.json` o `appsettings.Development.json`:
+   ```json
+   "ConnectionStrings": {
+     "DefaultConnection": "Host=tulocal;Database=tudb;Username=tu_usuario;Password=tu_password"
+   }
+   ```
+2. **Restaurar dependencias:**
+   ```bash
+   dotnet restore
+   ```
+3. **Aplicar migraciones:**
+   ```bash
+   dotnet ef database update
+   ```
+4. **Ejecutar la aplicación:**
+   ```bash
+   dotnet run
+   ```
+   La API estará activa en [http://localhost:5140](http://localhost:5140) (por defecto) y puedes acceder a Swagger en `/swagger`.
+
+##  Estructura general del repositorio
+```text
+├── Application/    # Casos de uso, DTOs y reglas de aplicación
+├── Domain/         # Entidades base y definiciones del dominio
+├── Infrastructure/ # Persistencia de base de datos y servicios externos
+├── Presentation/   # Controladores API y configuración de la aplicación
+└── Filters/        # Middlewares y filtros de excepción personalizados
+```
