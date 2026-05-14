@@ -20,7 +20,6 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Inventory remains in its own schema by default.
         modelBuilder.HasDefaultSchema("inventario");
 
         // ===== EMPRESAS (Shared) =====

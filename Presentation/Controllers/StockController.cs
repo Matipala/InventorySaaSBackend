@@ -257,9 +257,9 @@ public class StockController : BaseController
             await _inventarioService.ActualizarStock(request.ProductoId, request.AlmacenId, (int)-request.Cantidad, empresaId);
             return Ok(true);
         }
-        catch
+        catch (Exception ex)
         {
-            return Ok(false);
+            return BadRequest(new { mensaje = "No se pudo descontar el stock: " + ex.Message });
         }
     }
 

@@ -23,13 +23,92 @@ Gestión centralizada de recursos físicos y reglas de negocio asociadas a la ex
 - **Reportes:** [EPPlus](https://www.epplussoftware.com/)
 - **Documentación:** [Swashbuckle (Swagger)](https://github.com/domaindrivendev/Swashbuckle.AspNetCore)
 
-## Instrucciones de ejecución
+## Instrucciones de ejecucion
 
 ### Requisitos previos
-- .NET 9.0 SDK
+- .NET 10.0 SDK
 - PostgreSQL 15+ instalado y configurado
 
-### Pasos para iniciar el servidor
+### Ejecucion con Docker (recomendado)
+Desde la raiz del workspace:
+```bash
+docker compose up --build
+```
+La API queda disponible en http://localhost:5140.
+
+### Archivo compose
+Desde la raiz del workspace:
+```bash
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  inventory-api:
+    build:
+      context: ./InventorySaaSBackend
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: >
+        Host=db;
+        Port=5432;
+        Database=${POSTGRES_DB};
+        Username=${POSTGRES_USER};
+        Password=${POSTGRES_PASSWORD}
+    ports:
+      - "5140:8080"
+    depends_on:
+      - db
+
+  ventas-api:
+    build:
+      context: ./VentasBackend
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: >
+        Host=db;
+        Port=5432;
+        Database=${POSTGRES_DB};
+        Username=${POSTGRES_USER};
+        Password=${POSTGRES_PASSWORD}
+      InventoryApi__BaseUrl: http://inventory-api:8080
+      Integration__InventarioBaseUrl: http://inventory-api:8080
+    ports:
+      - "5005:8080"
+    depends_on:
+      - db
+      - inventory-api
+
+  compras-api:
+    build:
+      context: ./ComprasBackend
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: >
+        Host=db;
+        Port=5432;
+        Database=${POSTGRES_DB};
+        Username=${POSTGRES_USER};
+        Password=${POSTGRES_PASSWORD}
+      InventoryApi__BaseUrl: http://inventory-api:8080
+    ports:
+      - "5006:8080"
+    depends_on:
+      - db
+      - inventory-api
+
+volumes:
+  pgdata:
+```
+
+### Pasos para iniciar el servidor (sin Docker)
 1. **Configurar la base de datos:**
    Modifica la cadena de conexión en `appsettings.json` o `appsettings.Development.json`:
    ```json
@@ -45,11 +124,15 @@ Gestión centralizada de recursos físicos y reglas de negocio asociadas a la ex
    ```bash
    dotnet ef database update
    ```
-4. **Ejecutar la aplicación:**
+4. **Correr seeds (opcional):**
+  ```bash
+  dotnet run -- --seed
+  ```
+5. **Ejecutar la aplicación:**
    ```bash
    dotnet run
    ```
-   La API estará activa en [http://localhost:5140](http://localhost:5140) (por defecto) y puedes acceder a Swagger en `/swagger`.
+   La API estara activa en http://localhost:5140 (por defecto) y puedes acceder a Swagger en /swagger.
 
 ##  Estructura general del repositorio
 ```text
