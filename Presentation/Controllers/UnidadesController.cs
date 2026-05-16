@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using InventorySaaSBackend.Controllers;
-using InventorySaaSBackend.Business.Interface;
+using InventorySaaSBackend.Application.Interface;
 using InventorySaaSBackend.Domain.Entity;
 
 namespace InventorySaaSBackend.Presentation.Controllers;

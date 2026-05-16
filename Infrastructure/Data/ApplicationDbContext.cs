@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using InventorySaaSBackend.Models;
 using InventorySaaSBackend.Domain.Entity;
 
-namespace InventorySaaSBackend.Data;
+namespace InventorySaaSBackend.Infrastructure.Data;
 
 public class ApplicationDbContext : DbContext
 {
@@ -20,7 +20,6 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Inventory remains in its own schema by default.
         modelBuilder.HasDefaultSchema("inventario");
 
         // ===== EMPRESAS (Shared) =====

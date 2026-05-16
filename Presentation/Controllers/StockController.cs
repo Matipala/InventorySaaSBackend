@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using InventorySaaSBackend.Controllers;
-using InventorySaaSBackend.Data;
-using InventorySaaSBackend.Business.DTOs;
-using InventorySaaSBackend.Business.Interface;
+using InventorySaaSBackend.Infrastructure.Data;
+using InventorySaaSBackend.Application.DTOs;
+using InventorySaaSBackend.Application.Interface;
 using InventorySaaSBackend.Models;
 using InventorySaaSBackend.Services;
 
@@ -162,15 +162,17 @@ public class StockController : BaseController
     {
         int empresaId = GetEmpresaId();
 
-        if (request.Cantidad <= 0)
-            return BadRequest("La cantidad inicial debe ser mayor a cero");
+        if (request.Cantidad < 0)
+            return (BadRequest("La cantidad inicial no puede ser negativa"));
 
         var resultado = await _inventarioService.CrearMovimiento(
             request.IdProducto,
             request.IdAlmacen,
             request.Cantidad,
             "ENTRADA",
-            empresaId
+            empresaId,
+            null,
+            "Stock Inicial"
         );
 
         if (!resultado.exito)
@@ -236,6 +238,37 @@ public class StockController : BaseController
             .ToListAsync();
 
         return Ok(stockAgotado);
+    }
+
+    [HttpPost("validar")]
+    public async Task<IActionResult> Validar([FromBody] ValidarStockRequest request)
+    {
+        int empresaId = GetEmpresaId();
+        bool disponible = await _inventarioService.ValidarStockDisponible(request.ProductoId, request.AlmacenId, (int)request.Cantidad, empresaId);
+        return Ok(disponible);
+    }
+
+    [HttpPost("descontar")]
+    public async Task<IActionResult> Descontar([FromBody] ValidarStockRequest request)
+    {
+        int empresaId = GetEmpresaId();
+        try
+        {
+            await _inventarioService.ActualizarStock(request.ProductoId, request.AlmacenId, (int)-request.Cantidad, empresaId);
+            return Ok(true);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { mensaje = "No se pudo descontar el stock: " + ex.Message });
+        }
+    }
+
+    [HttpGet("actual")]
+    public async Task<IActionResult> GetActual([FromQuery] int productoId, [FromQuery] int almacenId)
+    {
+        int empresaId = GetEmpresaId();
+        var cantidad = await _inventarioService.ObtenerStockActual(productoId, almacenId, empresaId);
+        return Ok(cantidad);
     }
 
     [HttpGet("exportar/excel")]

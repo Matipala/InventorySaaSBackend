@@ -15,4 +15,5 @@ public class Productos
     [Column("precio_venta", TypeName = "numeric(18,2)")] public decimal PrecioVenta { get; set; } = 0m;
     [Column("agotado_86")] public bool Agotado86 { get; set; } = false;
     [Column("activo")] public bool Activo { get; set; } = true;
+    [Column("estacion")] public string? Estacion { get; set; }
 }

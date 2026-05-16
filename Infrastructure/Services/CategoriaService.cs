@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using InventorySaaSBackend.Data;
-using InventorySaaSBackend.Business.Interface;
+using InventorySaaSBackend.Infrastructure.Data;
+using InventorySaaSBackend.Application.Interface;
 using InventorySaaSBackend.Models;
 
-namespace InventorySaaSBackend.Infraestructure.Services;
+namespace InventorySaaSBackend.Infrastructure.Services;
 
 public class CategoriaService : ICategoriaService
 {
@@ -30,6 +30,9 @@ public class CategoriaService : ICategoriaService
 
     public async Task<(bool exito, string mensaje, Categoria? categoria)> Crear(Categoria categoria, int idEmpresa)
     {
+        if (string.IsNullOrWhiteSpace(categoria.Nombre))
+            return (false, "El nombre de la categoría es obligatorio", null);
+
         categoria.IdEmpresa = idEmpresa;
 
         bool existe = await _context.Categorias
@@ -51,6 +54,9 @@ public class CategoriaService : ICategoriaService
 
         if (categoria == null)
             return (false, "Categoría no encontrada", null);
+
+        if (string.IsNullOrWhiteSpace(categoriaActualizada.Nombre))
+            return (false, "El nombre de la categoría es obligatorio", null);
 
         bool nombreEnUso = await _context.Categorias
             .AnyAsync(c => c.Nombre == categoriaActualizada.Nombre &&

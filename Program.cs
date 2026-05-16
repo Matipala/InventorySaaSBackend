@@ -1,13 +1,21 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
-using InventorySaaSBackend.Data;
+using InventorySaaSBackend.Infrastructure.Data;
 
-using InventorySaaSBackend.Business.Interface;
+using InventorySaaSBackend.Application.Interface;
 
-using InventorySaaSBackend.Infraestructure.Services;
+using InventorySaaSBackend.Infrastructure.Services;
 using InventorySaaSBackend.Services;
 
+
+DotNetEnv.Env.Load();
+
 var builder = WebApplication.CreateBuilder(args);
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddUserSecrets<Program>();
+}
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -47,6 +55,8 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+
 
 if (app.Environment.IsDevelopment())
 {
