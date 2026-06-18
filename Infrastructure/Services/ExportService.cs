@@ -14,7 +14,7 @@ public class ExportService : IExportService
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
     }
 
-    public async Task<byte[]> ExportarProductosExcel(int idEmpresa)
+    public async Task<byte[]> ExportarProductosExcel(Guid idEmpresa)
     {
         var productos = await _context.Productos
             .Where(p => p.IdEmpresa == idEmpresa)
@@ -66,7 +66,7 @@ public class ExportService : IExportService
         return stream.ToArray();
     }
 
-    public async Task<byte[]> ExportarStockExcel(int idEmpresa)
+    public async Task<byte[]> ExportarStockExcel(Guid idEmpresa)
     {
         var stock = await _context.Stock
             .Where(s => s.IdEmpresa == idEmpresa)
@@ -150,7 +150,7 @@ public class ExportService : IExportService
         return stream.ToArray();
     }
 
-    public async Task<byte[]> ExportarMovimientosExcel(int idEmpresa, DateTime? fechaInicio, DateTime? fechaFin)
+    public async Task<byte[]> ExportarMovimientosExcel(Guid idEmpresa, DateTime? fechaInicio, DateTime? fechaFin)
     {
         var query = _context.Movimientos
             .Where(m => m.IdEmpresa == idEmpresa);
@@ -241,7 +241,7 @@ public class ExportService : IExportService
         return stream.ToArray();
     }
 
-    public async Task<byte[]> ExportarKardexExcel(int idProducto, int idAlmacen, int idEmpresa, DateTime? fechaInicio, DateTime? fechaFin)
+    public async Task<byte[]> ExportarKardexExcel(Guid idProducto, Guid idAlmacen, Guid idEmpresa, DateTime? fechaInicio, DateTime? fechaFin)
     {
         var producto = await _context.Productos
             .FirstOrDefaultAsync(p => p.IdProducto == idProducto && p.IdEmpresa == idEmpresa);
@@ -252,7 +252,7 @@ public class ExportService : IExportService
         var query = _context.Movimientos
             .Where(m => m.IdProducto == idProducto && m.IdEmpresa == idEmpresa);
 
-        if (idAlmacen > 0)
+        if (idAlmacen != Guid.Empty)
             query = query.Where(m => m.IdAlmacen == idAlmacen);
 
         if (fechaInicio.HasValue)

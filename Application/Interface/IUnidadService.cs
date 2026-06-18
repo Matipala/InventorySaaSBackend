@@ -4,9 +4,9 @@ namespace InventorySaaSBackend.Application.Interface;
 
 public interface IUnidadService
 {
-    Task<IEnumerable<UnidadMedida>> ObtenerTodos(int idEmpresa);
-    Task<UnidadMedida?> ObtenerPorId(int idUnidad, int idEmpresa);
-    Task<(bool exito, string mensaje, UnidadMedida? unidad)> Crear(UnidadMedida unidad, int idEmpresa);
-    Task<(bool exito, string mensaje, UnidadMedida? unidad)> Actualizar(int idUnidad, UnidadMedida unidad, int idEmpresa);
-    Task<UnidadMedida?> CambiarEstado(int idUnidad, bool activo, int idEmpresa);
+    Task<IEnumerable<UnidadMedida>> ObtenerTodos(Guid idEmpresa);
+    Task<UnidadMedida?> ObtenerPorId(Guid idUnidad, Guid idEmpresa);
+    Task<(bool exito, string mensaje, UnidadMedida? unidad)> Crear(UnidadMedida unidad, Guid idEmpresa);
+    Task<(bool exito, string mensaje, UnidadMedida? unidad)> Actualizar(Guid idUnidad, UnidadMedida unidad, Guid idEmpresa);
+    Task<UnidadMedida?> CambiarEstado(Guid idUnidad, bool activo, Guid idEmpresa);
 }

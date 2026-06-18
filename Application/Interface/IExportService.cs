@@ -2,8 +2,8 @@ namespace InventorySaaSBackend.Services;
 
 public interface IExportService
 {
-    Task<byte[]> ExportarProductosExcel(int idEmpresa);
-    Task<byte[]> ExportarStockExcel(int idEmpresa);
-    Task<byte[]> ExportarMovimientosExcel(int idEmpresa, DateTime? fechaInicio, DateTime? fechaFin);
-    Task<byte[]> ExportarKardexExcel(int idProducto, int idAlmacen, int idEmpresa, DateTime? fechaInicio, DateTime? fechaFin);
+    Task<byte[]> ExportarProductosExcel(Guid idEmpresa);
+    Task<byte[]> ExportarStockExcel(Guid idEmpresa);
+    Task<byte[]> ExportarMovimientosExcel(Guid idEmpresa, DateTime? fechaInicio, DateTime? fechaFin);
+    Task<byte[]> ExportarKardexExcel(Guid idProducto, Guid idAlmacen, Guid idEmpresa, DateTime? fechaInicio, DateTime? fechaFin);
 }

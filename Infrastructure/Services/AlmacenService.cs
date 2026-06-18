@@ -14,28 +14,29 @@ public class AlmacenService : IAlmacenService
         _context = context;
     }
 
-    public async Task<IEnumerable<Almacenes>> ObtenerTodos(int idEmpresa)
+    public async Task<IEnumerable<Almacenes>> ObtenerTodos(Guid idEmpresa)
     {
         return await _context.Almacenes
             .Where(a => a.IdEmpresa == idEmpresa)
             .ToListAsync();
     }
 
-    public async Task<Almacenes?> ObtenerPorId(int id, int idEmpresa)
+    public async Task<Almacenes?> ObtenerPorId(Guid id, Guid idEmpresa)
     {
         return await _context.Almacenes
             .FirstOrDefaultAsync(a => a.IdAlmacen == id && a.IdEmpresa == idEmpresa);
     }
 
-    public async Task<Almacenes> Crear(Almacenes almacen, int idEmpresa)
+    public async Task<Almacenes> Crear(Almacenes almacen, Guid idEmpresa)
     {
         almacen.IdEmpresa = idEmpresa;
+        almacen.IdAlmacen = Guid.NewGuid();
         _context.Almacenes.Add(almacen);
         await _context.SaveChangesAsync();
         return almacen;
     }
 
-    public async Task<Almacenes?> Actualizar(int id, Almacenes almacenActualizado, int idEmpresa)
+    public async Task<Almacenes?> Actualizar(Guid id, Almacenes almacenActualizado, Guid idEmpresa)
     {
         var almacen = await _context.Almacenes
             .FirstOrDefaultAsync(a => a.IdAlmacen == id && a.IdEmpresa == idEmpresa);
@@ -51,7 +52,7 @@ public class AlmacenService : IAlmacenService
         return almacen;
     }
 
-    public async Task<(bool exito, string mensaje)> Eliminar(int id, int idEmpresa)
+    public async Task<(bool exito, string mensaje)> Eliminar(Guid id, Guid idEmpresa)
     {
         var almacen = await _context.Almacenes
             .FirstOrDefaultAsync(a => a.IdAlmacen == id && a.IdEmpresa == idEmpresa);

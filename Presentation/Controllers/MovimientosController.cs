@@ -32,7 +32,7 @@ public class MovimientosController : BaseController
             return BadRequest(new ValidationProblemDetails(ModelState));
         }
 
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         var resultado = await _inventarioService.CrearMovimiento(
             request.IdProducto, request.IdAlmacen, request.Cantidad,
             request.Tipo, empresaId, request.IdAlmacenDestino);
@@ -49,12 +49,11 @@ public class MovimientosController : BaseController
         [FromQuery] DateTime? fechaFin,
         [FromQuery] string? tipo)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
 
         var query = _context.Movimientos
             .Where(m => m.IdEmpresa == empresaId);
 
-        // Filtros opcionales
         if (fechaInicio.HasValue)
             query = query.Where(m => m.Fecha >= fechaInicio.Value);
 
@@ -92,12 +91,12 @@ public class MovimientosController : BaseController
 
     [HttpGet("producto/{idProducto}")]
     public async Task<IActionResult> GetKardexProducto(
-        int idProducto,
-        [FromQuery] int? idAlmacen,
+        Guid idProducto,
+        [FromQuery] Guid? idAlmacen,
         [FromQuery] DateTime? fechaInicio,
         [FromQuery] DateTime? fechaFin)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
 
         var query = _context.Movimientos
             .Where(m => m.IdProducto == idProducto && m.IdEmpresa == empresaId);
@@ -152,11 +151,11 @@ public class MovimientosController : BaseController
 
     [HttpGet("almacen/{idAlmacen}")]
     public async Task<IActionResult> GetByAlmacen(
-        int idAlmacen,
+        Guid idAlmacen,
         [FromQuery] DateTime? fechaInicio,
         [FromQuery] DateTime? fechaFin)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
 
         var query = _context.Movimientos
             .Where(m => m.IdAlmacen == idAlmacen && m.IdEmpresa == empresaId);
@@ -190,7 +189,7 @@ public class MovimientosController : BaseController
     [HttpGet("alertas/sin-movimiento")]
     public async Task<IActionResult> GetProductosSinMovimiento([FromQuery] int dias = 30)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         var fechaLimite = DateTime.UtcNow.AddDays(-dias);
 
         var productosConStock = await _context.Stock
@@ -230,18 +229,18 @@ public class MovimientosController : BaseController
 
     [HttpGet("exportar/kardex/{idProducto}")]
     public async Task<IActionResult> ExportarKardexExcel(
-        int idProducto,
-        [FromQuery] int? idAlmacen,
+        Guid idProducto,
+        [FromQuery] Guid? idAlmacen,
         [FromQuery] DateTime? fechaInicio,
         [FromQuery] DateTime? fechaFin)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
 
         try
         {
             var fileBytes = await _exportService.ExportarKardexExcel(
                 idProducto,
-                idAlmacen ?? 0,
+                idAlmacen ?? Guid.Empty,
                 empresaId,
                 fechaInicio,
                 fechaFin
@@ -264,7 +263,7 @@ public class MovimientosController : BaseController
         [FromQuery] DateTime? fechaInicio,
         [FromQuery] DateTime? fechaFin)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         var fileBytes = await _exportService.ExportarMovimientosExcel(empresaId, fechaInicio, fechaFin);
         var fileName = $"Movimientos_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
         return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);

@@ -15,7 +15,7 @@ public class InventarioService : IInventarioService
     }
 
     public async Task<(bool exito, string mensaje)> CrearMovimiento(
-        int idProducto, int idAlmacen, int cantidad, string tipo, int idEmpresa, int? idAlmacenDestino = null, string? motivo = null)
+        Guid idProducto, Guid idAlmacen, int cantidad, string tipo, Guid idEmpresa, Guid? idAlmacenDestino = null, string? motivo = null)
     {
         using var transaction = await _context.Database.BeginTransactionAsync();
         try
@@ -105,7 +105,7 @@ public class InventarioService : IInventarioService
         }
     }
 
-    public async Task<int> ObtenerStockActual(int idProducto, int idAlmacen, int idEmpresa)
+    public async Task<int> ObtenerStockActual(Guid idProducto, Guid idAlmacen, Guid idEmpresa)
     {
         var stock = await _context.Stock
             .FirstOrDefaultAsync(s =>
@@ -116,13 +116,13 @@ public class InventarioService : IInventarioService
         return stock?.Cantidad ?? 0;
     }
 
-    public async Task<bool> ValidarStockDisponible(int idProducto, int idAlmacen, int cantidad, int idEmpresa)
+    public async Task<bool> ValidarStockDisponible(Guid idProducto, Guid idAlmacen, int cantidad, Guid idEmpresa)
     {
         var stockActual = await ObtenerStockActual(idProducto, idAlmacen, idEmpresa);
         return stockActual >= cantidad;
     }
 
-    public async Task ActualizarStock(int idProducto, int idAlmacen, int cantidad, int idEmpresa)
+    public async Task ActualizarStock(Guid idProducto, Guid idAlmacen, int cantidad, Guid idEmpresa)
     {
         var stock = await _context.Stock
             .FirstOrDefaultAsync(s =>
@@ -153,7 +153,7 @@ public class InventarioService : IInventarioService
     }
 
     public async Task<(bool exito, string mensaje)> AjusteManualStock(
-        int idProducto, int idAlmacen, int nuevaCantidad, string motivo, int idEmpresa)
+        Guid idProducto, Guid idAlmacen, int nuevaCantidad, string motivo, Guid idEmpresa)
     {
         using var transaction = await _context.Database.BeginTransactionAsync();
         try

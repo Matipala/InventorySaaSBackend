@@ -19,15 +19,15 @@ public class CategoriasController : BaseController
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         var categorias = await _categoriaService.ObtenerTodos(empresaId);
         return Ok(categorias);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById(Guid id)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         var categoria = await _categoriaService.ObtenerPorId(id, empresaId);
 
         if (categoria == null)
@@ -39,7 +39,7 @@ public class CategoriasController : BaseController
     [HttpPost]
     public async Task<IActionResult> Create(Categoria nuevaCategoria)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         var resultado = await _categoriaService.Crear(nuevaCategoria, empresaId);
 
         if (!resultado.exito)
@@ -49,9 +49,9 @@ public class CategoriasController : BaseController
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, Categoria categoriaActualizada)
+    public async Task<IActionResult> Update(Guid id, Categoria categoriaActualizada)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         var resultado = await _categoriaService.Actualizar(id, categoriaActualizada, empresaId);
 
         if (!resultado.exito)

@@ -27,6 +27,7 @@ public class ApplicationDbContext : DbContext
         {
             entity.ToTable("Empresas", "shared");
             entity.HasKey(e => e.IdEmpresa);
+            entity.Property(e => e.IdEmpresa).HasDefaultValueSql("gen_random_uuid()");
             entity.Property(e => e.Nombre).IsRequired().HasMaxLength(200);
             entity.Property(e => e.Activo).HasDefaultValue(true);
             entity.HasIndex(e => e.Nombre);
@@ -37,6 +38,7 @@ public class ApplicationDbContext : DbContext
         {
             entity.ToTable("Categorias", "inventario");
             entity.HasKey(e => e.IdCategoria);
+            entity.Property(e => e.IdCategoria).HasDefaultValueSql("gen_random_uuid()");
             entity.Property(e => e.Nombre).IsRequired().HasMaxLength(100);
             entity.HasOne<Empresas>()
                 .WithMany()
@@ -50,6 +52,7 @@ public class ApplicationDbContext : DbContext
         {
             entity.ToTable("Unidades", "inventario");
             entity.HasKey(e => e.IdUnidad);
+            entity.Property(e => e.IdUnidad).HasDefaultValueSql("gen_random_uuid()");
             entity.Property(e => e.Nombre).IsRequired().HasMaxLength(100);
             entity.Property(e => e.Abreviatura).IsRequired().HasMaxLength(20);
             entity.Property(e => e.Activo).HasDefaultValue(true);
@@ -67,6 +70,7 @@ public class ApplicationDbContext : DbContext
         {
             entity.ToTable("Productos", "inventario");
             entity.HasKey(e => e.IdProducto);
+            entity.Property(e => e.IdProducto).HasDefaultValueSql("gen_random_uuid()");
             entity.Property(e => e.Nombre).IsRequired().HasMaxLength(200);
             entity.Property(e => e.Sku).IsRequired().HasMaxLength(50);
             entity.Property(e => e.Activo).HasDefaultValue(true);
@@ -97,6 +101,7 @@ public class ApplicationDbContext : DbContext
         {
             entity.ToTable("Almacenes", "inventario");
             entity.HasKey(e => e.IdAlmacen);
+            entity.Property(e => e.IdAlmacen).HasDefaultValueSql("gen_random_uuid()");
             entity.Property(e => e.Nombre).IsRequired().HasMaxLength(100);
             entity.HasOne<Empresas>()
                 .WithMany()
@@ -110,6 +115,7 @@ public class ApplicationDbContext : DbContext
         {
             entity.ToTable("Stock", "inventario");
             entity.HasKey(e => e.IdStock);
+            entity.Property(e => e.IdStock).HasDefaultValueSql("gen_random_uuid()");
             entity.Property(e => e.Cantidad).HasDefaultValue(0);
 
             entity.HasOne<Empresas>()
@@ -141,6 +147,7 @@ public class ApplicationDbContext : DbContext
         {
             entity.ToTable("Movimientos", "inventario");
             entity.HasKey(e => e.IdMovimiento);
+            entity.Property(e => e.IdMovimiento).HasDefaultValueSql("gen_random_uuid()");
             entity.Property(e => e.Tipo).IsRequired().HasMaxLength(50);
             entity.Property(e => e.Fecha).HasDefaultValueSql("CURRENT_TIMESTAMP");
 

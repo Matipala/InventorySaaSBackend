@@ -7,10 +7,10 @@ namespace InventorySaaSBackend.Models;
 
 public class Movimientos
 {
-    [Key][Column("id_movimiento")] public int IdMovimiento { get; set; }
-    [Column("id_empresa")] public int IdEmpresa { get; set; }
-    [Column("id_producto")] public int IdProducto { get; set; }
-    [Column("id_almacen")] public int IdAlmacen { get; set; }
+    [Key][Column("id_movimiento")] public Guid IdMovimiento { get; set; } = Guid.NewGuid();
+    [Column("id_empresa")] public Guid IdEmpresa { get; set; }
+    [Column("id_producto")] public Guid IdProducto { get; set; }
+    [Column("id_almacen")] public Guid IdAlmacen { get; set; }
     [Column("tipo")] public string Tipo { get; set; } = string.Empty;
     [Column("fecha")] public DateTime Fecha { get; set; } = DateTime.Now;
     [Column("cantidad")] public int Cantidad { get; set; } = 0;

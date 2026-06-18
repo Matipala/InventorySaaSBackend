@@ -20,9 +20,9 @@ public class ProductosController : BaseController
     }
 
     [HttpGet()]
-    public async Task<IActionResult> GetAll([FromQuery] string? q, [FromQuery] int? idCategoria, [FromQuery] int? idUnidad, [FromQuery] bool? activo)
+    public async Task<IActionResult> GetAll([FromQuery] string? q, [FromQuery] Guid? idCategoria, [FromQuery] Guid? idUnidad, [FromQuery] bool? activo)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         var productos = await _productoService.BuscarFiltrados(empresaId, q, idCategoria, idUnidad, activo);
         return Ok(productos);
     }
@@ -30,7 +30,7 @@ public class ProductosController : BaseController
     [HttpPost]
     public async Task<IActionResult> Create(Productos nuevoProducto)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         var resultado = await _productoService.Crear(nuevoProducto, empresaId);
 
         if (!resultado.exito)
@@ -40,9 +40,9 @@ public class ProductosController : BaseController
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById(Guid id)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         var producto = await _productoService.ObtenerPorId(id, empresaId);
 
         if (producto == null)
@@ -52,9 +52,9 @@ public class ProductosController : BaseController
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, Productos productoActualizado)
+    public async Task<IActionResult> Update(Guid id, Productos productoActualizado)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         var resultado = await _productoService.Actualizar(id, productoActualizado, empresaId);
 
         if (!resultado.exito)
@@ -69,9 +69,9 @@ public class ProductosController : BaseController
     }
 
     [HttpPatch("{id}/estado")]
-    public async Task<IActionResult> CambiarEstado(int id, [FromBody] bool activo)
+    public async Task<IActionResult> CambiarEstado(Guid id, [FromBody] bool activo)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         var producto = await _productoService.CambiarEstado(id, activo, empresaId);
 
         if (producto == null)
@@ -81,9 +81,9 @@ public class ProductosController : BaseController
     }
 
     [HttpPatch("{id}/agotado")]
-    public async Task<IActionResult> CambiarAgotado(int id, [FromBody] bool agotado)
+    public async Task<IActionResult> CambiarAgotado(Guid id, [FromBody] bool agotado)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         var producto = await _productoService.CambiarAgotado(id, agotado, empresaId);
 
         if (producto == null)
@@ -95,7 +95,7 @@ public class ProductosController : BaseController
     [HttpGet("exportar/excel")]
     public async Task<IActionResult> ExportarExcel()
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         var fileBytes = await _exportService.ExportarProductosExcel(empresaId);
         var fileName = $"Productos_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
         return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);

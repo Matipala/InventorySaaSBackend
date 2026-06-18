@@ -5,8 +5,8 @@ namespace InventorySaaSBackend.Services;
 public interface IEmpresaService
 {
     Task<IEnumerable<Empresas>> ObtenerTodos();
-    Task<Empresas?> ObtenerPorId(int id);
+    Task<Empresas?> ObtenerPorId(Guid id);
     Task<Empresas> Crear(Empresas empresa);
-    Task<Empresas?> Actualizar(int id, Empresas empresa);
-    Task<Empresas?> CambiarEstado(int id, bool activo);
+    Task<Empresas?> Actualizar(Guid id, Empresas empresa);
+    Task<Empresas?> CambiarEstado(Guid id, bool activo);
 }

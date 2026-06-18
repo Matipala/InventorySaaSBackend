@@ -2,9 +2,9 @@ namespace InventorySaaSBackend.Application.Interface;
 
 public interface IInventarioService
 {
-    Task<(bool exito, string mensaje)> CrearMovimiento(int idProducto, int idAlmacen, int cantidad, string tipo, int idEmpresa, int? idAlmacenDestino = null, string? motivo = null);
-    Task<int> ObtenerStockActual(int idProducto, int idAlmacen, int idEmpresa);
-    Task<bool> ValidarStockDisponible(int idProducto, int idAlmacen, int cantidad, int idEmpresa);
-    Task ActualizarStock(int idProducto, int idAlmacen, int cantidad, int idEmpresa);
-    Task<(bool exito, string mensaje)> AjusteManualStock(int idProducto, int idAlmacen, int nuevaCantidad, string motivo, int idEmpresa);
+    Task<(bool exito, string mensaje)> CrearMovimiento(Guid idProducto, Guid idAlmacen, int cantidad, string tipo, Guid idEmpresa, Guid? idAlmacenDestino = null, string? motivo = null);
+    Task<int> ObtenerStockActual(Guid idProducto, Guid idAlmacen, Guid idEmpresa);
+    Task<bool> ValidarStockDisponible(Guid idProducto, Guid idAlmacen, int cantidad, Guid idEmpresa);
+    Task ActualizarStock(Guid idProducto, Guid idAlmacen, int cantidad, Guid idEmpresa);
+    Task<(bool exito, string mensaje)> AjusteManualStock(Guid idProducto, Guid idAlmacen, int nuevaCantidad, string motivo, Guid idEmpresa);
 }
