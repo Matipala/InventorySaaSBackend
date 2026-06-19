@@ -19,15 +19,15 @@ public class AlmacenesController : BaseController
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         var almacenes = await _almacenService.ObtenerTodos(empresaId);
         return Ok(almacenes);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById(Guid id)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         var almacen = await _almacenService.ObtenerPorId(id, empresaId);
 
         if (almacen == null)
@@ -39,15 +39,15 @@ public class AlmacenesController : BaseController
     [HttpPost]
     public async Task<IActionResult> Create(Almacenes nuevoAlmacen)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         var almacen = await _almacenService.Crear(nuevoAlmacen, empresaId);
         return CreatedAtAction(nameof(GetById), new { id = almacen.IdAlmacen }, almacen);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, Almacenes almacenActualizado)
+    public async Task<IActionResult> Update(Guid id, Almacenes almacenActualizado)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         var almacen = await _almacenService.Actualizar(id, almacenActualizado, empresaId);
 
         if (almacen == null)
@@ -57,9 +57,9 @@ public class AlmacenesController : BaseController
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(Guid id)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         var resultado = await _almacenService.Eliminar(id, empresaId);
 
         if (!resultado.exito)

@@ -14,14 +14,14 @@ public class ProductoService : IProductoService
         _context = context;
     }
 
-    public async Task<IEnumerable<Productos>> ObtenerTodos(int idEmpresa)
+    public async Task<IEnumerable<Productos>> ObtenerTodos(Guid idEmpresa)
     {
         return await _context.Productos
             .Where(p => p.IdEmpresa == idEmpresa)
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Productos>> BuscarFiltrados(int idEmpresa, string? q, int? idCategoria, int? idUnidad, bool? activo)
+    public async Task<IEnumerable<Productos>> BuscarFiltrados(Guid idEmpresa, string? q, Guid? idCategoria, Guid? idUnidad, bool? activo)
     {
         var query = _context.Productos.Where(p => p.IdEmpresa == idEmpresa);
 
@@ -45,13 +45,13 @@ public class ProductoService : IProductoService
             .ToListAsync();
     }
 
-    public async Task<Productos?> ObtenerPorId(int id, int idEmpresa)
+    public async Task<Productos?> ObtenerPorId(Guid id, Guid idEmpresa)
     {
         return await _context.Productos
             .FirstOrDefaultAsync(p => p.IdProducto == id && p.IdEmpresa == idEmpresa);
     }
 
-    public async Task<(bool exito, string mensaje, Productos? producto)> Crear(Productos producto, int idEmpresa)
+    public async Task<(bool exito, string mensaje, Productos? producto)> Crear(Productos producto, Guid idEmpresa)
     {
         if (string.IsNullOrWhiteSpace(producto.Nombre))
             return (false, "El nombre del producto es obligatorio", null);
@@ -78,6 +78,7 @@ public class ProductoService : IProductoService
             return (false, "La unidad seleccionada no existe o esta inactiva", null);
 
         producto.IdEmpresa = idEmpresa;
+        producto.IdProducto = Guid.NewGuid();
         producto.Nombre = producto.Nombre.Trim();
         producto.Sku = producto.Sku.Trim();
 
@@ -93,7 +94,7 @@ public class ProductoService : IProductoService
         return (true, "Producto creado exitosamente", producto);
     }
 
-    public async Task<(bool exito, string mensaje, Productos? producto)> Actualizar(int id, Productos productoActualizado, int idEmpresa)
+    public async Task<(bool exito, string mensaje, Productos? producto)> Actualizar(Guid id, Productos productoActualizado, Guid idEmpresa)
     {
         var producto = await _context.Productos
             .FirstOrDefaultAsync(p => p.IdProducto == id && p.IdEmpresa == idEmpresa);
@@ -148,7 +149,7 @@ public class ProductoService : IProductoService
         return (true, "Producto actualizado exitosamente", producto);
     }
 
-    public async Task<Productos?> CambiarEstado(int id, bool activo, int idEmpresa)
+    public async Task<Productos?> CambiarEstado(Guid id, bool activo, Guid idEmpresa)
     {
         var producto = await _context.Productos
             .FirstOrDefaultAsync(p => p.IdProducto == id && p.IdEmpresa == idEmpresa);
@@ -163,7 +164,7 @@ public class ProductoService : IProductoService
         return producto;
     }
 
-    public async Task<Productos?> CambiarAgotado(int id, bool agotado, int idEmpresa)
+    public async Task<Productos?> CambiarAgotado(Guid id, bool agotado, Guid idEmpresa)
     {
         var producto = await _context.Productos
             .FirstOrDefaultAsync(p => p.IdProducto == id && p.IdEmpresa == idEmpresa);

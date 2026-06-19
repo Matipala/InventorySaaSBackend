@@ -14,7 +14,7 @@ public class UnidadService : IUnidadService
         _context = context;
     }
 
-    public async Task<IEnumerable<UnidadMedida>> ObtenerTodos(int idEmpresa)
+    public async Task<IEnumerable<UnidadMedida>> ObtenerTodos(Guid idEmpresa)
     {
         return await _context.Unidades
             .Where(u => u.IdEmpresa == idEmpresa)
@@ -22,13 +22,13 @@ public class UnidadService : IUnidadService
             .ToListAsync();
     }
 
-    public async Task<UnidadMedida?> ObtenerPorId(int idUnidad, int idEmpresa)
+    public async Task<UnidadMedida?> ObtenerPorId(Guid idUnidad, Guid idEmpresa)
     {
         return await _context.Unidades
             .FirstOrDefaultAsync(u => u.IdUnidad == idUnidad && u.IdEmpresa == idEmpresa);
     }
 
-    public async Task<(bool exito, string mensaje, UnidadMedida? unidad)> Crear(UnidadMedida unidad, int idEmpresa)
+    public async Task<(bool exito, string mensaje, UnidadMedida? unidad)> Crear(UnidadMedida unidad, Guid idEmpresa)
     {
         if (string.IsNullOrWhiteSpace(unidad.Nombre))
             return (false, "El nombre de la unidad es obligatorio.", null);
@@ -46,6 +46,7 @@ public class UnidadService : IUnidadService
             return (false, "Ya existe una unidad con ese nombre.", null);
 
         unidad.IdEmpresa = idEmpresa;
+        unidad.IdUnidad = Guid.NewGuid();
         unidad.Nombre = nombreNormalizado;
         unidad.Abreviatura = abreviaturaNormalizada;
 
@@ -55,7 +56,7 @@ public class UnidadService : IUnidadService
         return (true, "Unidad creada exitosamente.", unidad);
     }
 
-    public async Task<(bool exito, string mensaje, UnidadMedida? unidad)> Actualizar(int idUnidad, UnidadMedida unidad, int idEmpresa)
+    public async Task<(bool exito, string mensaje, UnidadMedida? unidad)> Actualizar(Guid idUnidad, UnidadMedida unidad, Guid idEmpresa)
     {
         var unidadDb = await _context.Unidades
             .FirstOrDefaultAsync(u => u.IdUnidad == idUnidad && u.IdEmpresa == idEmpresa);
@@ -88,7 +89,7 @@ public class UnidadService : IUnidadService
         return (true, "Unidad actualizada exitosamente.", unidadDb);
     }
 
-    public async Task<UnidadMedida?> CambiarEstado(int idUnidad, bool activo, int idEmpresa)
+    public async Task<UnidadMedida?> CambiarEstado(Guid idUnidad, bool activo, Guid idEmpresa)
     {
         var unidad = await _context.Unidades
             .FirstOrDefaultAsync(u => u.IdUnidad == idUnidad && u.IdEmpresa == idEmpresa);

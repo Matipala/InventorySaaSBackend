@@ -14,7 +14,7 @@ public class CategoriaService : ICategoriaService
         _context = context;
     }
 
-    public async Task<IEnumerable<Categoria>> ObtenerTodos(int idEmpresa)
+    public async Task<IEnumerable<Categoria>> ObtenerTodos(Guid idEmpresa)
     {
         return await _context.Categorias
             .Where(c => c.IdEmpresa == idEmpresa)
@@ -22,18 +22,19 @@ public class CategoriaService : ICategoriaService
             .ToListAsync();
     }
 
-    public async Task<Categoria?> ObtenerPorId(int id, int idEmpresa)
+    public async Task<Categoria?> ObtenerPorId(Guid id, Guid idEmpresa)
     {
         return await _context.Categorias
             .FirstOrDefaultAsync(c => c.IdCategoria == id && c.IdEmpresa == idEmpresa);
     }
 
-    public async Task<(bool exito, string mensaje, Categoria? categoria)> Crear(Categoria categoria, int idEmpresa)
+    public async Task<(bool exito, string mensaje, Categoria? categoria)> Crear(Categoria categoria, Guid idEmpresa)
     {
         if (string.IsNullOrWhiteSpace(categoria.Nombre))
             return (false, "El nombre de la categoría es obligatorio", null);
 
         categoria.IdEmpresa = idEmpresa;
+        categoria.IdCategoria = Guid.NewGuid();
 
         bool existe = await _context.Categorias
             .AnyAsync(c => c.Nombre == categoria.Nombre && c.IdEmpresa == idEmpresa);
@@ -47,7 +48,7 @@ public class CategoriaService : ICategoriaService
         return (true, "Categoría creada exitosamente", categoria);
     }
 
-    public async Task<(bool exito, string mensaje, Categoria? categoria)> Actualizar(int id, Categoria categoriaActualizada, int idEmpresa)
+    public async Task<(bool exito, string mensaje, Categoria? categoria)> Actualizar(Guid id, Categoria categoriaActualizada, Guid idEmpresa)
     {
         var categoria = await _context.Categorias
             .FirstOrDefaultAsync(c => c.IdCategoria == id && c.IdEmpresa == idEmpresa);

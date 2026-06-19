@@ -1,13 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace inventorysaasbackend.Infrastructure.Migrations
+namespace inventorysaasbackend.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialSharedInventario : Migration
+    public partial class InitialUuidSchema : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -23,8 +22,7 @@ namespace inventorysaasbackend.Infrastructure.Migrations
                 schema: "shared",
                 columns: table => new
                 {
-                    id_empresa = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    id_empresa = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     nombre = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     activo = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
@@ -38,9 +36,8 @@ namespace inventorysaasbackend.Infrastructure.Migrations
                 schema: "inventario",
                 columns: table => new
                 {
-                    id_almacen = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    id_empresa = table.Column<int>(type: "integer", nullable: false),
+                    id_almacen = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    id_empresa = table.Column<Guid>(type: "uuid", nullable: false),
                     nombre = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
@@ -60,9 +57,8 @@ namespace inventorysaasbackend.Infrastructure.Migrations
                 schema: "inventario",
                 columns: table => new
                 {
-                    id_categoria = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    id_empresa = table.Column<int>(type: "integer", nullable: false),
+                    id_categoria = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    id_empresa = table.Column<Guid>(type: "uuid", nullable: false),
                     nombre = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
@@ -82,9 +78,8 @@ namespace inventorysaasbackend.Infrastructure.Migrations
                 schema: "inventario",
                 columns: table => new
                 {
-                    id_unidad = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    id_empresa = table.Column<int>(type: "integer", nullable: false),
+                    id_unidad = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    id_empresa = table.Column<Guid>(type: "uuid", nullable: false),
                     nombre = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     abreviatura = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     activo = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
@@ -106,16 +101,16 @@ namespace inventorysaasbackend.Infrastructure.Migrations
                 schema: "inventario",
                 columns: table => new
                 {
-                    id_producto = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    id_empresa = table.Column<int>(type: "integer", nullable: false),
+                    id_producto = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    id_empresa = table.Column<Guid>(type: "uuid", nullable: false),
                     sku = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     nombre = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    id_categoria = table.Column<int>(type: "integer", nullable: false),
-                    id_unidad = table.Column<int>(type: "integer", nullable: true),
+                    id_categoria = table.Column<Guid>(type: "uuid", nullable: false),
+                    id_unidad = table.Column<Guid>(type: "uuid", nullable: true),
                     precio_venta = table.Column<decimal>(type: "numeric(18,2)", nullable: false, defaultValue: 0m),
                     agotado_86 = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    activo = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
+                    activo = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    estacion = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -148,14 +143,14 @@ namespace inventorysaasbackend.Infrastructure.Migrations
                 schema: "inventario",
                 columns: table => new
                 {
-                    id_movimiento = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    id_empresa = table.Column<int>(type: "integer", nullable: false),
-                    id_producto = table.Column<int>(type: "integer", nullable: false),
-                    id_almacen = table.Column<int>(type: "integer", nullable: false),
+                    id_movimiento = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    id_empresa = table.Column<Guid>(type: "uuid", nullable: false),
+                    id_producto = table.Column<Guid>(type: "uuid", nullable: false),
+                    id_almacen = table.Column<Guid>(type: "uuid", nullable: false),
                     tipo = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     fecha = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
-                    cantidad = table.Column<int>(type: "integer", nullable: false)
+                    cantidad = table.Column<int>(type: "integer", nullable: false),
+                    motivo = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -188,11 +183,10 @@ namespace inventorysaasbackend.Infrastructure.Migrations
                 schema: "inventario",
                 columns: table => new
                 {
-                    id_stock = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    id_empresa = table.Column<int>(type: "integer", nullable: false),
-                    id_producto = table.Column<int>(type: "integer", nullable: false),
-                    id_almacen = table.Column<int>(type: "integer", nullable: false),
+                    id_stock = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    id_empresa = table.Column<Guid>(type: "uuid", nullable: false),
+                    id_producto = table.Column<Guid>(type: "uuid", nullable: false),
+                    id_almacen = table.Column<Guid>(type: "uuid", nullable: false),
                     cantidad = table.Column<int>(type: "integer", nullable: false, defaultValue: 0)
                 },
                 constraints: table =>

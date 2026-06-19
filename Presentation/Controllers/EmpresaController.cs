@@ -24,7 +24,7 @@ public class EmpresaController : BaseController
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById(Guid id)
     {
         var empresa = await _empresaService.ObtenerPorId(id);
 
@@ -34,26 +34,26 @@ public class EmpresaController : BaseController
         return Ok(empresa);
     }
 
-    // [HttpPost]
-    // public async Task<IActionResult> Create(Empresas nuevaEmpresa)
-    // {
-    //     var empresa = await _empresaService.Crear(nuevaEmpresa);
-    //     return CreatedAtAction(nameof(GetById), new { id = empresa.IdEmpresa }, empresa);
-    // }
+    [HttpPost]
+    public async Task<IActionResult> Create(Empresas nuevaEmpresa)
+    {
+        var empresa = await _empresaService.Crear(nuevaEmpresa);
+        return CreatedAtAction(nameof(GetById), new { id = empresa.IdEmpresa }, empresa);
+    }
 
-    // [HttpPut("{id}")]
-    // public async Task<IActionResult> Update(int id, Empresas empresaActualizada)
-    // {
-    //     var empresa = await _empresaService.Actualizar(id, empresaActualizada);
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id, Empresas empresaActualizada)
+    {
+        var empresa = await _empresaService.Actualizar(id, empresaActualizada);
 
-    //     if (empresa == null)
-    //         return NotFound("Empresa no encontrada");
+        if (empresa == null)
+            return NotFound("Empresa no encontrada");
 
-    //     return Ok(empresa);
-    // }
+        return Ok(empresa);
+    }
 
     [HttpPatch("{id}/estado")]
-    public async Task<IActionResult> CambiarEstado(int id, [FromBody] bool activo)
+    public async Task<IActionResult> CambiarEstado(Guid id, [FromBody] bool activo)
     {
         var empresa = await _empresaService.CambiarEstado(id, activo);
 

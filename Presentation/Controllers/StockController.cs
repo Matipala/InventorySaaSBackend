@@ -27,7 +27,7 @@ public class StockController : BaseController
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
 
         var stock = await _context.Stock
             .Where(s => s.IdEmpresa == empresaId)
@@ -55,9 +55,9 @@ public class StockController : BaseController
     }
 
     [HttpGet("producto/{idProducto}")]
-    public async Task<IActionResult> GetByProducto(int idProducto)
+    public async Task<IActionResult> GetByProducto(Guid idProducto)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
 
         var stock = await _context.Stock
             .Where(s => s.IdProducto == idProducto && s.IdEmpresa == empresaId)
@@ -88,9 +88,9 @@ public class StockController : BaseController
     }
 
     [HttpGet("almacen/{idAlmacen}")]
-    public async Task<IActionResult> GetByAlmacen(int idAlmacen)
+    public async Task<IActionResult> GetByAlmacen(Guid idAlmacen)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
 
         var stock = await _context.Stock
             .Where(s => s.IdAlmacen == idAlmacen && s.IdEmpresa == empresaId)
@@ -112,9 +112,9 @@ public class StockController : BaseController
     }
 
     [HttpGet("producto/{idProducto}/almacen/{idAlmacen}")]
-    public async Task<IActionResult> GetByProductoAlmacen(int idProducto, int idAlmacen)
+    public async Task<IActionResult> GetByProductoAlmacen(Guid idProducto, Guid idAlmacen)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
 
         var cantidad = await _inventarioService.ObtenerStockActual(idProducto, idAlmacen, empresaId);
 
@@ -141,7 +141,7 @@ public class StockController : BaseController
     [HttpPost("ajuste")]
     public async Task<IActionResult> AjusteManual([FromBody] AjusteStockRequest request)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
 
         var resultado = await _inventarioService.AjusteManualStock(
             request.IdProducto,
@@ -160,7 +160,7 @@ public class StockController : BaseController
     [HttpPost("inicial")]
     public async Task<IActionResult> RegistrarStockInicial([FromBody] StockInicialRequest request)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
 
         if (request.Cantidad < 0)
             return (BadRequest("La cantidad inicial no puede ser negativa"));
@@ -184,7 +184,7 @@ public class StockController : BaseController
     [HttpGet("alertas/bajo")]
     public async Task<IActionResult> GetStockBajo([FromQuery] int umbral = 10)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
 
         var stockBajo = await _context.Stock
             .Where(s => s.IdEmpresa == empresaId && s.Cantidad <= umbral && s.Cantidad > 0)
@@ -214,7 +214,7 @@ public class StockController : BaseController
     [HttpGet("alertas/agotado")]
     public async Task<IActionResult> GetStockAgotado()
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
 
         var stockAgotado = await _context.Stock
             .Where(s => s.IdEmpresa == empresaId && s.Cantidad == 0)
@@ -243,7 +243,7 @@ public class StockController : BaseController
     [HttpPost("validar")]
     public async Task<IActionResult> Validar([FromBody] ValidarStockRequest request)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         bool disponible = await _inventarioService.ValidarStockDisponible(request.ProductoId, request.AlmacenId, (int)request.Cantidad, empresaId);
         return Ok(disponible);
     }
@@ -251,7 +251,7 @@ public class StockController : BaseController
     [HttpPost("descontar")]
     public async Task<IActionResult> Descontar([FromBody] ValidarStockRequest request)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         try
         {
             await _inventarioService.ActualizarStock(request.ProductoId, request.AlmacenId, (int)-request.Cantidad, empresaId);
@@ -264,9 +264,9 @@ public class StockController : BaseController
     }
 
     [HttpGet("actual")]
-    public async Task<IActionResult> GetActual([FromQuery] int productoId, [FromQuery] int almacenId)
+    public async Task<IActionResult> GetActual([FromQuery] Guid productoId, [FromQuery] Guid almacenId)
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         var cantidad = await _inventarioService.ObtenerStockActual(productoId, almacenId, empresaId);
         return Ok(cantidad);
     }
@@ -274,7 +274,7 @@ public class StockController : BaseController
     [HttpGet("exportar/excel")]
     public async Task<IActionResult> ExportarExcel()
     {
-        int empresaId = GetEmpresaId();
+        Guid empresaId = GetEmpresaId();
         var fileBytes = await _exportService.ExportarStockExcel(empresaId);
         var fileName = $"Inventario_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
         return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);

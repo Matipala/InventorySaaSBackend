@@ -3,20 +3,17 @@ using System;
 using InventorySaaSBackend.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace inventorysaasbackend.Infrastructure.Migrations
+namespace inventorysaasbackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260511225929_PendingModelChanges")]
-    partial class PendingModelChanges
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,12 +25,11 @@ namespace inventorysaasbackend.Infrastructure.Migrations
 
             modelBuilder.Entity("InventorySaaSBackend.Domain.Entity.UnidadMedida", b =>
                 {
-                    b.Property<int>("IdUnidad")
+                    b.Property<Guid>("IdUnidad")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id_unidad");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdUnidad"));
+                        .HasColumnType("uuid")
+                        .HasColumnName("id_unidad")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<string>("Abreviatura")
                         .IsRequired()
@@ -47,8 +43,8 @@ namespace inventorysaasbackend.Infrastructure.Migrations
                         .HasDefaultValue(true)
                         .HasColumnName("activo");
 
-                    b.Property<int>("IdEmpresa")
-                        .HasColumnType("integer")
+                    b.Property<Guid>("IdEmpresa")
+                        .HasColumnType("uuid")
                         .HasColumnName("id_empresa");
 
                     b.Property<string>("Nombre")
@@ -67,15 +63,14 @@ namespace inventorysaasbackend.Infrastructure.Migrations
 
             modelBuilder.Entity("InventorySaaSBackend.Models.Almacenes", b =>
                 {
-                    b.Property<int>("IdAlmacen")
+                    b.Property<Guid>("IdAlmacen")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id_almacen");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id_almacen")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdAlmacen"));
-
-                    b.Property<int>("IdEmpresa")
-                        .HasColumnType("integer")
+                    b.Property<Guid>("IdEmpresa")
+                        .HasColumnType("uuid")
                         .HasColumnName("id_empresa");
 
                     b.Property<string>("Nombre")
@@ -93,15 +88,14 @@ namespace inventorysaasbackend.Infrastructure.Migrations
 
             modelBuilder.Entity("InventorySaaSBackend.Models.Categoria", b =>
                 {
-                    b.Property<int>("IdCategoria")
+                    b.Property<Guid>("IdCategoria")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id_categoria");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id_categoria")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdCategoria"));
-
-                    b.Property<int>("IdEmpresa")
-                        .HasColumnType("integer")
+                    b.Property<Guid>("IdEmpresa")
+                        .HasColumnType("uuid")
                         .HasColumnName("id_empresa");
 
                     b.Property<string>("Nombre")
@@ -120,12 +114,11 @@ namespace inventorysaasbackend.Infrastructure.Migrations
 
             modelBuilder.Entity("InventorySaaSBackend.Models.Empresas", b =>
                 {
-                    b.Property<int>("IdEmpresa")
+                    b.Property<Guid>("IdEmpresa")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id_empresa");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdEmpresa"));
+                        .HasColumnType("uuid")
+                        .HasColumnName("id_empresa")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<bool>("Activo")
                         .ValueGeneratedOnAdd()
@@ -148,12 +141,11 @@ namespace inventorysaasbackend.Infrastructure.Migrations
 
             modelBuilder.Entity("InventorySaaSBackend.Models.Movimientos", b =>
                 {
-                    b.Property<int>("IdMovimiento")
+                    b.Property<Guid>("IdMovimiento")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id_movimiento");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdMovimiento"));
+                        .HasColumnType("uuid")
+                        .HasColumnName("id_movimiento")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<int>("Cantidad")
                         .HasColumnType("integer")
@@ -165,16 +157,16 @@ namespace inventorysaasbackend.Infrastructure.Migrations
                         .HasColumnName("fecha")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<int>("IdAlmacen")
-                        .HasColumnType("integer")
+                    b.Property<Guid>("IdAlmacen")
+                        .HasColumnType("uuid")
                         .HasColumnName("id_almacen");
 
-                    b.Property<int>("IdEmpresa")
-                        .HasColumnType("integer")
+                    b.Property<Guid>("IdEmpresa")
+                        .HasColumnType("uuid")
                         .HasColumnName("id_empresa");
 
-                    b.Property<int>("IdProducto")
-                        .HasColumnType("integer")
+                    b.Property<Guid>("IdProducto")
+                        .HasColumnType("uuid")
                         .HasColumnName("id_producto");
 
                     b.Property<string>("Motivo")
@@ -204,12 +196,11 @@ namespace inventorysaasbackend.Infrastructure.Migrations
 
             modelBuilder.Entity("InventorySaaSBackend.Models.Productos", b =>
                 {
-                    b.Property<int>("IdProducto")
+                    b.Property<Guid>("IdProducto")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id_producto");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdProducto"));
+                        .HasColumnType("uuid")
+                        .HasColumnName("id_producto")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<bool>("Activo")
                         .ValueGeneratedOnAdd()
@@ -227,16 +218,16 @@ namespace inventorysaasbackend.Infrastructure.Migrations
                         .HasColumnType("text")
                         .HasColumnName("estacion");
 
-                    b.Property<int>("IdCategoria")
-                        .HasColumnType("integer")
+                    b.Property<Guid>("IdCategoria")
+                        .HasColumnType("uuid")
                         .HasColumnName("id_categoria");
 
-                    b.Property<int>("IdEmpresa")
-                        .HasColumnType("integer")
+                    b.Property<Guid>("IdEmpresa")
+                        .HasColumnType("uuid")
                         .HasColumnName("id_empresa");
 
-                    b.Property<int?>("IdUnidad")
-                        .HasColumnType("integer")
+                    b.Property<Guid?>("IdUnidad")
+                        .HasColumnType("uuid")
                         .HasColumnName("id_unidad");
 
                     b.Property<string>("Nombre")
@@ -273,12 +264,11 @@ namespace inventorysaasbackend.Infrastructure.Migrations
 
             modelBuilder.Entity("InventorySaaSBackend.Models.Stock", b =>
                 {
-                    b.Property<int>("IdStock")
+                    b.Property<Guid>("IdStock")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id_stock");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdStock"));
+                        .HasColumnType("uuid")
+                        .HasColumnName("id_stock")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<int>("Cantidad")
                         .ValueGeneratedOnAdd()
@@ -286,16 +276,16 @@ namespace inventorysaasbackend.Infrastructure.Migrations
                         .HasDefaultValue(0)
                         .HasColumnName("cantidad");
 
-                    b.Property<int>("IdAlmacen")
-                        .HasColumnType("integer")
+                    b.Property<Guid>("IdAlmacen")
+                        .HasColumnType("uuid")
                         .HasColumnName("id_almacen");
 
-                    b.Property<int>("IdEmpresa")
-                        .HasColumnType("integer")
+                    b.Property<Guid>("IdEmpresa")
+                        .HasColumnType("uuid")
                         .HasColumnName("id_empresa");
 
-                    b.Property<int>("IdProducto")
-                        .HasColumnType("integer")
+                    b.Property<Guid>("IdProducto")
+                        .HasColumnType("uuid")
                         .HasColumnName("id_producto");
 
                     b.HasKey("IdStock");

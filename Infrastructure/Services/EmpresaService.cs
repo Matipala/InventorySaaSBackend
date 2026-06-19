@@ -18,20 +18,21 @@ public class EmpresaService : IEmpresaService
         return await _context.Empresas.ToListAsync();
     }
 
-    public async Task<Empresas?> ObtenerPorId(int id)
+    public async Task<Empresas?> ObtenerPorId(Guid id)
     {
         return await _context.Empresas.FindAsync(id);
     }
 
     public async Task<Empresas> Crear(Empresas empresa)
     {
+        empresa.IdEmpresa = Guid.NewGuid();
         empresa.Activo = true;
         _context.Empresas.Add(empresa);
         await _context.SaveChangesAsync();
         return empresa;
     }
 
-    public async Task<Empresas?> Actualizar(int id, Empresas empresaActualizada)
+    public async Task<Empresas?> Actualizar(Guid id, Empresas empresaActualizada)
     {
         var empresa = await _context.Empresas.FindAsync(id);
 
@@ -47,7 +48,7 @@ public class EmpresaService : IEmpresaService
         return empresa;
     }
 
-    public async Task<Empresas?> CambiarEstado(int id, bool activo)
+    public async Task<Empresas?> CambiarEstado(Guid id, bool activo)
     {
         var empresa = await _context.Empresas.FindAsync(id);
 
