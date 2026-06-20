@@ -1,8 +1,10 @@
+using System.Threading.Channels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using InventorySaaSBackend.Infrastructure.Data;
 
 using InventorySaaSBackend.Application.Interface;
+using InventorySaaSBackend.Application.DTOs;
 
 using InventorySaaSBackend.Infrastructure.Services;
 using InventorySaaSBackend.Services;
@@ -27,6 +29,8 @@ builder.Services.AddScoped<IUnidadService, UnidadService>();
 builder.Services.AddScoped<IProductoService, ProductoService>();
 builder.Services.AddScoped<IEmpresaService, EmpresaService>();
 builder.Services.AddScoped<IExportService, ExportService>();
+
+builder.Services.AddSingleton(Channel.CreateUnbounded<RestockEvent>());
 
 builder.Services.AddControllers();
 builder.Services.Configure<ApiBehaviorOptions>(options =>
@@ -59,11 +63,8 @@ var app = builder.Build();
 
 
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseCors("FrontendPolicy");
 // app.UseHttpsRedirection();

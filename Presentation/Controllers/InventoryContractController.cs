@@ -1,3 +1,6 @@
+using System.Text.Json;
+using System.Threading.Channels;
+using InventorySaaSBackend.Application.DTOs;
 using InventorySaaSBackend.Application.DTOs.Contract;
 using InventorySaaSBackend.Application.Interface;
 using InventorySaaSBackend.Domain.Entity;
@@ -20,6 +23,7 @@ public class InventoryContractController : ControllerBase
     private readonly ICategoriaService _categoriaService;
     private readonly IUnidadService _unidadService;
     private readonly ApplicationDbContext _context;
+    private readonly Channel<RestockEvent> _restockChannel;
 
     public InventoryContractController(
         IProductoService productoService,
@@ -28,7 +32,8 @@ public class InventoryContractController : ControllerBase
         IAlmacenService almacenService,
         ICategoriaService categoriaService,
         IUnidadService unidadService,
-        ApplicationDbContext context)
+        ApplicationDbContext context,
+        Channel<RestockEvent> restockChannel)
     {
         _productoService = productoService;
         _inventarioService = inventarioService;
@@ -37,6 +42,7 @@ public class InventoryContractController : ControllerBase
         _categoriaService = categoriaService;
         _unidadService = unidadService;
         _context = context;
+        _restockChannel = restockChannel;
     }
 
     private Guid ResolveCompanyId(string companyCen)
@@ -52,6 +58,24 @@ public class InventoryContractController : ControllerBase
         var prod = productos.FirstOrDefault(p => string.Equals(p.Sku, productCen, StringComparison.OrdinalIgnoreCase));
         if (prod != null) return prod.IdProducto;
         throw new BadHttpRequestException($"Invalid ProductCen: {productCen}");
+    }
+
+    [HttpGet("companies/{companyCen}/restock-events")]
+    public async Task StreamRestockEvents(string companyCen, CancellationToken ct)
+    {
+        Response.Headers["Content-Type"] = "text/event-stream";
+        Response.Headers["Cache-Control"] = "no-cache";
+        Response.Headers["Connection"] = "keep-alive";
+
+        await foreach (var evento in _restockChannel.Reader.ReadAllAsync(ct))
+        {
+            if (evento.CompanyCen == companyCen)
+            {
+                var json = JsonSerializer.Serialize(evento);
+                await Response.WriteAsync($"data: {json}\n\n", ct);
+                await Response.Body.FlushAsync(ct);
+            }
+        }
     }
 
     [HttpGet("companies")]
@@ -190,17 +214,19 @@ public class InventoryContractController : ControllerBase
         if (!Guid.TryParse(productCen, out var idProducto))
             return BadRequest(new { mensaje = "productCen invalido" });
 
-        var producto = new Productos
-        {
-            Nombre = request.Name,
-            Sku = request.Sku,
-            IdCategoria = Guid.Parse(request.CategoryCen),
-            IdUnidad = Guid.Parse(request.UnitCen),
-            PrecioVenta = request.SalePrice,
-            Activo = true
-        };
+        var existente = await _productoService.ObtenerPorId(idProducto, idEmpresa);
+        if (existente == null)
+            return NotFound(new { mensaje = "Producto no encontrado" });
 
-        var result = await _productoService.Actualizar(idProducto, producto, idEmpresa);
+        existente.Nombre = !string.IsNullOrWhiteSpace(request.Name) ? request.Name : existente.Nombre;
+        existente.Sku = !string.IsNullOrWhiteSpace(request.Sku) ? request.Sku : existente.Sku;
+        if (Guid.TryParse(request.CategoryCen, out var idCat))
+            existente.IdCategoria = idCat;
+        if (Guid.TryParse(request.UnitCen, out var idUnidad))
+            existente.IdUnidad = idUnidad;
+        existente.PrecioVenta = request.SalePrice > 0 ? request.SalePrice : existente.PrecioVenta;
+
+        var result = await _productoService.Actualizar(idProducto, existente, idEmpresa);
         if (!result.exito)
         {
             if (result.mensaje == "Producto no encontrado")
@@ -649,6 +675,8 @@ public class InventoryContractController : ControllerBase
                 return BadRequest(new { mensaje = result.mensaje });
         }
 
+        await NotifyRestockAsync(companyCen, request.WarehouseCen, request.Items);
+
         return Ok("Stock incrementado exitosamente");
     }
 
@@ -718,7 +746,46 @@ public class InventoryContractController : ControllerBase
                 return Conflict(new { message = result.mensaje });
         }
 
+        if (request.DocumentType == "ENTRY")
+        {
+            var items = request.Lines.Select(l => new StockValidationItemContractDto
+            {
+                ProductCen = l.ProductCen,
+                Quantity = l.Quantity
+            }).ToList();
+            await NotifyRestockAsync(companyCen, request.WarehouseCen, items);
+        }
+
         return Ok(new { success = true });
+    }
+
+    private async Task NotifyRestockAsync(string companyCen, string warehouseCen, List<StockValidationItemContractDto> items)
+    {
+        Guid idEmpresa = ResolveCompanyId(companyCen);
+        foreach (var item in items)
+        {
+            string productName = "Producto";
+            try
+            {
+                Guid idProducto = await ResolveProductId(item.ProductCen, idEmpresa);
+                var producto = await _productoService.ObtenerPorId(idProducto, idEmpresa);
+                if (producto != null) productName = producto.Nombre;
+            }
+            catch { }
+
+            var restockEvent = new RestockEvent
+            {
+                CompanyCen = companyCen,
+                ProductCen = item.ProductCen,
+                ProductName = productName,
+                Quantity = (int)item.Quantity,
+                WarehouseCen = warehouseCen,
+                EventType = "RESTOCK",
+                Timestamp = DateTime.UtcNow
+            };
+
+            await _restockChannel.Writer.WriteAsync(restockEvent);
+        }
     }
 
     [HttpGet("companies/{companyCen}/documents")]
