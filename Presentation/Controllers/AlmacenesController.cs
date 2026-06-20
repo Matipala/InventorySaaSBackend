@@ -6,6 +6,7 @@ using InventorySaaSBackend.Models;
 namespace InventorySaaSBackend.Presentation.Controllers;
 
 [ApiController]
+[Route("api/{companyCen}/[controller]")]
 [Route("api/[controller]")]
 public class AlmacenesController : BaseController
 {

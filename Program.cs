@@ -69,5 +69,6 @@ app.UseCors("FrontendPolicy");
 // app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+app.MapGet("/health", () => Results.Ok(new { status = "ok", service = "inventory" }));
 
 app.Run();

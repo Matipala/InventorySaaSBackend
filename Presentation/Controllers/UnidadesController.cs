@@ -6,6 +6,7 @@ using InventorySaaSBackend.Domain.Entity;
 namespace InventorySaaSBackend.Presentation.Controllers;
 
 [ApiController]
+[Route("api/{companyCen}/[controller]")]
 [Route("api/[controller]")]
 public class UnidadesController : BaseController
 {

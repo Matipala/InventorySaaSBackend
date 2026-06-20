@@ -40,6 +40,7 @@ public class ApplicationDbContext : DbContext
             entity.HasKey(e => e.IdCategoria);
             entity.Property(e => e.IdCategoria).HasDefaultValueSql("gen_random_uuid()");
             entity.Property(e => e.Nombre).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Activo).HasDefaultValue(true);
             entity.HasOne<Empresas>()
                 .WithMany()
                 .HasForeignKey(e => e.IdEmpresa)
